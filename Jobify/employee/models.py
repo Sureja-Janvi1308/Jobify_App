@@ -107,7 +107,7 @@ class Applied_Jobs(models.Model):
 #     candidate = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
 #     name = models.CharField(max_length=100)
 #     years_of_experience = models.IntegerField()
-#
+
 #
 # class Resume(TimeStamped):
 #     candidate = models.OneToOneField('UserProfile', on_delete=models.CASCADE)

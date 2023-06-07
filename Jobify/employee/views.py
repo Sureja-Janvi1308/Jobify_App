@@ -34,9 +34,9 @@ class EmployeeProfileDeleteView(DeleteView):
     template_name = 'Accounts/employee/delete_profile.html'
     success_url = 'Homepage'
 
-    def form_valid(self, form):
-        messages.success(self.request, "The Profile was deleted successfully.")
-        return super(EmployeeProfileDeleteView, self).form_valid(form)
+    # def form_valid(self, form):
+    #     messages.success(self.request, "The Profile was deleted successfully.")
+    #     return super(EmployeeProfileDeleteView, self).form_valid(form)
 
 
 
