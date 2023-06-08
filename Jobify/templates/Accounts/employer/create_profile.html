@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
-<h1>Edit Employee Profile</h1>
+<h1>Edit Employer Profile</h1>
 <form method="post" enctype="multipart/form-data">
 {% csrf_token %}
 {{ form|crispy }}
-<button type="submit">Save profile</button>
-  <a href="{% url 'employee-profile-delete' employeeprofile.id %}">delete</a>
+<button type="submit">create profile</button>
+
 </form>
 {% endblock %}

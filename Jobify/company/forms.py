@@ -1,19 +1,19 @@
-import re
-
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout
-from crispy_forms.bootstrap import FormActions
+from crispy_forms.layout import Submit
 from django import forms
 
-from .models import EmployeeProfile
+from company.models import EmployerProfile
 
 
-class EmployeeProfileForm(forms.ModelForm):
+class EmployerProfileForm(forms.ModelForm):
     class Meta:
-        model = EmployeeProfile
+        model = EmployerProfile
         exclude = ['user']
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'address_1', 'address_2', 'city', 'state',
-                  'pincode', 'country', 'profile_pic']
+        fields = '__all__'
+        # fields = ['first_name', 'last_name', 'email', 'mobile', 'address_1', 'address_2', 'city', 'state',
+        #           'pincode', 'country','website','joining_date']
+
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -28,6 +28,7 @@ class EmployeeProfileForm(forms.ModelForm):
         if not re.match('[6-9][0-9]{9}', phone_number):
             raise forms.ValidationError('Not a Valid Phone Number')
         return phone_number
+
     def set_initial_user_data(self, user):
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name

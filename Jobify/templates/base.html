@@ -72,6 +72,10 @@
                                 {% endif %}
                             </a>
                             <div aria-labelledby="clientZone" class="dropdown-menu">
+                                <a href="{% url 'employer-profile-create' %}" class="dropdown-item">Create profile</a>
+                                <a href="{% url 'employer-profile-view' %}" class="dropdown-item">View profile</a>
+
+
                                 <a href="" class="dropdown-item">Dashboard</a>
                                 <a href="" class="dropdown-item">Applicants </a>
                                 <a href="" class="dropdown-item">Post a new
@@ -98,7 +102,13 @@
                                 {% endif %}
                             </a>
                             <div aria-labelledby="clientZone" class="dropdown-menu">
-                                <a href="{% url 'employee-profile-create' %}" class="dropdown-item">Edit Profile</a>
+
+                                <a href="{% url 'employee-profile-view' %}" class="dropdown-item">View Profile</a>
+
+
+                                <a href="{% url 'employee-profile-create' %}" class="dropdown-item">Create Profile</a>
+
+
                                 <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
                             </div>
                         </li>

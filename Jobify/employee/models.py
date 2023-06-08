@@ -32,7 +32,7 @@ class EmployeeProfile(models.Model):
         return self.first_name + self.last_name
 
     class Meta:
-        verbose_name = 'Employee Profile'
+        verbose_name = 'employeeprofile'
 
 
 class Employee(models.Model):

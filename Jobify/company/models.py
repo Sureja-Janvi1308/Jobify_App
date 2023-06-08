@@ -10,7 +10,7 @@ from Jobify import settings
 # Create your models here.
 
 class EmployerProfile(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='jobs', null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='employerprofile', null=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, null=True, blank=False)
     last_name = models.CharField(max_length=100, null=True, blank=False)
     email = models.EmailField(default='', unique=True)
