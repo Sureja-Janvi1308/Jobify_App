@@ -1,3 +1,5 @@
+import re
+
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
@@ -10,8 +12,7 @@ class EmployerProfileForm(forms.ModelForm):
         model = EmployerProfile
         exclude = ['user']
         fields = '__all__'
-        # fields = ['first_name', 'last_name', 'email', 'mobile', 'address_1', 'address_2', 'city', 'state',
-        #           'pincode', 'country','website','joining_date']
+
 
 
 

@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Delete Profile</h2>
+<p>2nd page</p>
+<form method="POST">
+{% csrf_token %}
+  {{ form.as_p }}
+<button type="submit">create</button>
+</form>
+{% endblock %}

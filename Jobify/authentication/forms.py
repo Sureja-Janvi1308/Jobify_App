@@ -65,7 +65,7 @@ class EmployeeRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
-        user.role = "employee"
+        user.is_employee = True
         if commit:
             user.save()
         return user
@@ -122,7 +122,8 @@ class EmployerRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
-        user.role = "employer"
+        print('gvdfggd')
+        user.is_employer = True
         if commit:
             user.save()
         return user

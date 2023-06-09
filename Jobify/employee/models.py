@@ -14,12 +14,11 @@ from company.models import Job
 
 
 class EmployeeProfile(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,related_name='employeeprofile',  null=True, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, null=True, blank=False)
     last_name = models.CharField(max_length=100, null=True, blank=False)
     email = models.EmailField(default='')
     phone_number = models.CharField(max_length=17, blank=True)
-# phone_number = models.CharField(max_length=100, unique=True)
     address_1 = models.CharField(_("address"), max_length=128)
     address_2 = models.CharField(_("address contd"), max_length=128, blank=True)
     city = models.CharField(_("city"), max_length=64)
@@ -48,7 +47,7 @@ class Employee(models.Model):
     skills = models.CharField(max_length=100)
     resume = models.FileField(upload_to='resumes/', null=True, blank=True)
     job_type = models.CharField(choices=CHOICES, default='', max_length=100)
-    company = models.ForeignKey(Job, blank=True, on_delete=models.CASCADE)
+    # company = models.ForeignKey(Job, blank=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user

@@ -5,10 +5,9 @@ from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
 
-from authentication.decorator import user_is_employee
 from authentication.models import CustomUser
-from employee.forms import EmployeeProfileForm
-from employee.models import EmployeeProfile
+from employee.forms import EmployeeProfileForm, EmployeeProfileFormContinue
+from employee.models import EmployeeProfile, Employee
 
 
 # class EmployeeProfileView(FormView):
@@ -77,15 +76,32 @@ class EmployeeProfileView(TemplateView):
 
 class EmployeeProfileUpdateView(UpdateView):
     model = EmployeeProfile
-    form_class = EmployeeProfileForm
-    template_name = 'employee_profile_update.html'
+    fields = ['phone_number', 'address_1', 'address_2', 'city', 'state',
+              'pincode', 'country','profile_pic']
+
+    template_name = 'Accounts/employee/update_profile.html'
     success_url = reverse_lazy('employee-profile-view')
+
+
+    def get_object(self, queryset=None):
+        return self.request.user.employeeprofile
+
+    def form_valid(self, form):
+        messages.success(self.request, "The Profile was updated successfully.")
+        return super(EmployeeProfileUpdateView, self).form_valid(form)
 
 
 class EmployeeProfileDeleteView(DeleteView):
     model = EmployeeProfile
-    template_name = 'employee_profile_delete.html'
-    success_url = reverse_lazy('employee-profile-view')
+    template_name = 'Accounts/employee/delete_profile.html'
+    success_url = reverse_lazy('loginPage')
+
+    def get_object(self, queryset=None):
+        return self.request.user.employeeprofile
+
+
+
+
 # class EmployeeProfileDetailView(DetailView):
 #     model = EmployeeProfile
 #     template_name = 'Accounts/employee/View_profile.html'
@@ -125,3 +141,7 @@ class EmployeeProfileDeleteView(DeleteView):
 #     def form_valid(self, form):
 #         messages.success(self.request, "The Profile was deleted successfully.")
 #         return super(EmployeeProfileDeleteView, self).form_valid(form)
+class EmployeeProfileContinue(CreateView):
+    model = Employee
+    form_class = EmployeeProfileFormContinue
+    template_name = 'Accounts/employee/continue.html'

@@ -1,8 +1,9 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, TemplateView, DetailView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
 from company.forms import EmployerProfileForm
 from company.models import EmployerProfile
@@ -17,24 +18,10 @@ class EmployerProfileCreateView(CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        messages.success(self.request, "The Profile was Created successfully.")
         return super(EmployerProfileCreateView, self).form_valid(form)
 
 
-    @method_decorator(login_required(login_url=reverse_lazy('loginPage')))
-    def dispatch(self, request, *args, **kwargs):
-        if not self.request.user.is_authenticated:
-            return reverse_lazy('loginPage')
-        if self.request.user.is_authenticated and self.request.user.role != 'employee':
-            return reverse_lazy('loginPage')
-        return super().dispatch(self.request, *args, **kwargs)
-
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -45,14 +32,39 @@ class EmployerProfileCreateView(CreateView):
         }
         return kwargs
 
-class EmployerProfileView(DetailView):
-    model = EmployerProfile
+class EmployerProfileView(TemplateView):
     template_name = 'Accounts/employer/view_profile.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        employee_profile = EmployerProfile.objects.filter(user=self.request.user)
-        breakpoint()
-        context['employee_profile'] = employee_profile
+        employer_profile = EmployerProfile.objects.get(user=self.request.user)
+        context['employer_profile'] = employer_profile
 
         return context
+
+class EmployerProfileUpdateView(UpdateView):
+    model = EmployerProfile
+    fields = ['mobile', 'address_1', 'address_2', 'city', 'state',
+              'pincode', 'country','website']
+
+    # form_class = EmployerProfileForm
+    template_name = 'Accounts/employer/update_profile.html'
+    success_url = reverse_lazy('employer-profile-view')
+
+    def get_object(self, queryset=None):
+        return self.request.user.employerprofile
+
+    def form_valid(self, form):
+        messages.success(self.request, "The profile was updated successfully.")
+        return super(EmployerProfileUpdateView, self).form_valid(form)
+
+
+class EmployerProfileDeleteView(DeleteView):
+    model = EmployerProfile
+    template_name = 'Accounts/employer/delete_profile.html'
+    success_url = reverse_lazy('loginPage')
+
+    def get_object(self, queryset=None):
+        return self.request.user.employerprofile
+
+

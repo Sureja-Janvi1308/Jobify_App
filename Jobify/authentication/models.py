@@ -46,9 +46,9 @@ class CustomUser(AbstractUser):
                               error_messages={
                                   'unique': "A user with that email already exists.",
                               })
-    role = models.CharField(max_length=12, default='', error_messages={
-        'required': "Role must be provided"
-    })
+    is_employee = models.BooleanField(default=False)
+    is_employer = models.BooleanField(default=False)
+
     gender = models.CharField(choices=GENDER, default='', max_length=100)
 
     USERNAME_FIELD = 'email'
