@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
+from django.views import View
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView
 
-from company.forms import EmployerProfileForm
-from company.models import EmployerProfile
+from company.forms import EmployerProfileForm, CreateJobForm
+from company.models import EmployerProfile, Job
 
 
 # Create your views here.
@@ -68,3 +69,52 @@ class EmployerProfileDeleteView(DeleteView):
         return self.request.user.employerprofile
 
 
+class DashboardView(ListView):
+    model = Job
+    template_name = 'Accounts/employer/dashboard.html'
+    context_object_name = 'jobs'
+
+    # @method_decorator(login_required(login_url=reverse_lazy('accounts:login')))
+    # @method_decorator(user_is_employer)
+    # def dispatch(self, request, *args, **kwargs):
+    #     return super().dispatch(self.request, *args, **kwargs)
+
+    def get_queryset(self):
+        return self.model.objects.filter(user_id=self.request.user.id)
+
+
+class JobCreateView(CreateView):
+    model = Job
+    form_class = CreateJobForm
+    template_name = 'Accounts/employer/create_job.html'
+    extra_context = {
+        'title': 'Post New Job'
+    }
+    success_url = reverse_lazy('dashboard')
+
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        return super().form_valid(form)
+
+
+
+class JobActive(View):
+    def get(self, request, job_id=None):
+        job = get_object_or_404(Job, user_id=request.user.id, id=job_id)
+        job.is_active= not job.is_active
+        job.save()
+        return redirect('dashboard')
+
+class JobUpdateView(UpdateView):
+    model = Job
+
+    template_name = 'Accounts/employer/job_edit.html'
+    fields = ['job_type', 'skills_required','salary','position']
+    success_url = reverse_lazy('dashboard')
+
+    def get_object(self, queryset=None):
+        return Job.objects.get(user=self.request.user)
+
+    def form_valid(self, form):
+        messages.success(self.request, "The job  was updated successfully.")
+        return super(JobUpdateView, self).form_valid(form)

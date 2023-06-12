@@ -41,7 +41,7 @@ class Employee(models.Model):
         ('internship', 'Internship'),
         ('remote', 'Remote'),
     )
-    user = models.ForeignKey(EmployeeProfile, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(EmployeeProfile, related_name='employee' ,on_delete=models.CASCADE, null=True)
     education = models.CharField(max_length=200, null=True, blank=False)
     grad_year = models.IntegerField(blank=True)
     skills = models.CharField(max_length=100)

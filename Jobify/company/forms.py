@@ -4,7 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 
-from company.models import EmployerProfile
+from company.models import EmployerProfile, Job
 
 
 class EmployerProfileForm(forms.ModelForm):
@@ -34,3 +34,24 @@ class EmployerProfileForm(forms.ModelForm):
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name
         self.fields['email'].initial = user.email
+
+
+
+class CreateJobForm(forms.ModelForm):
+    class Meta:
+        model = Job
+        exclude = ['user']
+        fields = '__all__'
+
+    # def is_valid(self):
+    #
+    #     valid = super(CreateJobForm, self).is_valid()
+    #     if valid:
+    #         return valid
+    #     return valid
+    #
+    # def save(self, commit=True):
+    #     job = super(CreateJobForm, self).save(commit=False)
+    #     if commit:
+    #         job.save()
+    #     return job

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+<h1>Edit job details</h1>
+<form method="post" enctype="multipart/form-data">
+{% csrf_token %}
+    <p>{{ job.title }}</p>
+{{ form|crispy }}
+<button type="submit">Update job</button>
+
+</form>
+{% endblock %}

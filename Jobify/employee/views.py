@@ -48,7 +48,7 @@ class EmployeeProfileCreateView(CreateView):
     model = EmployeeProfile
     form_class = EmployeeProfileForm
     template_name = 'Accounts/employee/create_profile.html'
-    success_url = reverse_lazy('employee-profile-view')
+    success_url = reverse_lazy('employee-profile-continue')
 
     def form_valid(self, form):
         form.instance.user = self.request.user
@@ -145,3 +145,5 @@ class EmployeeProfileContinue(CreateView):
     model = Employee
     form_class = EmployeeProfileFormContinue
     template_name = 'Accounts/employee/continue.html'
+    success_url = 'dashboard'
+

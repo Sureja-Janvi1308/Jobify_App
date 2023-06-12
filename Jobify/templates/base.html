@@ -76,9 +76,9 @@
                                 <a href="{% url 'employer-profile-view' %}" class="dropdown-item">View profile</a>
 
 
-                                <a href="" class="dropdown-item">Dashboard</a>
+                                <a href="{% url 'dashboard' %}" class="dropdown-item">Dashboard</a>
                                 <a href="" class="dropdown-item">Applicants </a>
-                                <a href="" class="dropdown-item">Post a new
+                                <a href="{% url 'employer-job-create' %}" class="dropdown-item">Post a new
                                     job </a>
                                 <a href="{% url 'logout' %}" class="dropdown-item">Logout</a>
                             </div>

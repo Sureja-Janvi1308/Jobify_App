@@ -39,7 +39,7 @@ class Job(models.Model):
         ('internship', 'Internship'),
         ('remote', 'Remote'),
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,default='', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='job', default='', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=300)
     job_type = models.CharField(max_length=30, choices=CHOICES, default='', null=True)

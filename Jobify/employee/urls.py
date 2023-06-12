@@ -9,4 +9,5 @@ urlpatterns = [
     path('employee/profile/delete/', EmployeeProfileDeleteView.as_view(), name='employee-profile-delete'),
     path('continue/', EmployeeProfileContinue.as_view(), name='employee-profile-continue'),
 
+
 ]
