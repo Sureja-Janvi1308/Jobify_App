@@ -4,10 +4,10 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView, DetailView
 
 from company.forms import EmployerProfileForm, CreateJobForm
-from company.models import EmployerProfile, Job
+from company.models import EmployerProfile, Job, Applicants
 
 
 # Create your views here.
@@ -22,8 +22,6 @@ class EmployerProfileCreateView(CreateView):
         messages.success(self.request, "The Profile was Created successfully.")
         return super(EmployerProfileCreateView, self).form_valid(form)
 
-
-
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['initial'] = {
@@ -32,6 +30,7 @@ class EmployerProfileCreateView(CreateView):
             'email': self.request.user.email
         }
         return kwargs
+
 
 class EmployerProfileView(TemplateView):
     template_name = 'Accounts/employer/view_profile.html'
@@ -43,10 +42,11 @@ class EmployerProfileView(TemplateView):
 
         return context
 
+
 class EmployerProfileUpdateView(UpdateView):
     model = EmployerProfile
     fields = ['mobile', 'address_1', 'address_2', 'city', 'state',
-              'pincode', 'country','website']
+              'pincode', 'country', 'website']
 
     # form_class = EmployerProfileForm
     template_name = 'Accounts/employer/update_profile.html'
@@ -62,8 +62,8 @@ class EmployerProfileUpdateView(UpdateView):
 
 class EmployerProfileDeleteView(DeleteView):
     model = EmployerProfile
-    template_name = 'Accounts/employer/delete_profile.html'
-    success_url = reverse_lazy('loginPage')
+    template_name = 'Accounts/employer/view_profile.html'
+    success_url = reverse_lazy('dashboard')
 
     def get_object(self, queryset=None):
         return self.request.user.employerprofile
@@ -97,24 +97,68 @@ class JobCreateView(CreateView):
         return super().form_valid(form)
 
 
-
 class JobActive(View):
+
     def get(self, request, job_id=None):
         job = get_object_or_404(Job, user_id=request.user.id, id=job_id)
-        job.is_active= not job.is_active
+        job.is_active = not job.is_active
         job.save()
+
         return redirect('dashboard')
+
 
 class JobUpdateView(UpdateView):
     model = Job
-
     template_name = 'Accounts/employer/job_edit.html'
-    fields = ['job_type', 'skills_required','salary','position']
+    fields = ['job_type', 'skills_required', 'salary', 'position']
     success_url = reverse_lazy('dashboard')
 
     def get_object(self, queryset=None):
-        return Job.objects.get(user=self.request.user)
+        obj, created = Job.objects.get_or_create(id=self.kwargs['job_id'])
+        return obj
+
 
     def form_valid(self, form):
         messages.success(self.request, "The job  was updated successfully.")
         return super(JobUpdateView, self).form_valid(form)
+
+
+class JobDeleteView(DeleteView):
+    model = EmployerProfile
+    template_name = 'Accounts/employer/dashboard.html'
+    success_url = reverse_lazy('dashboard')
+
+    def get_object(self, queryset=None):
+        obj, created = Job.objects.get_or_create(id=self.kwargs['job_id'])
+        return obj
+
+
+class ApplicantPerJobView(ListView):
+    model = Applicants
+    template_name = 'Accounts/employer/applicants.html'
+    context_object_name = 'applicants'
+    paginate_by = 1
+
+
+    def get_queryset(self):
+        return Applicants.objects.filter(job_id=self.kwargs['job_id']).order_by('id')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['job'] = Job.objects.get(id=self.kwargs['job_id'])
+        return context
+
+
+class ApplicantsListView(ListView):
+    model = Applicants
+    template_name = 'Accounts/employer/all-applicants.html'
+    context_object_name = 'applicants'
+
+    def get_queryset(self):
+        # jobs = Job.objects.filter(user_id=self.request.user.id)
+        return self.model.objects.filter(job__user_id=self.request.user.id)
+
+
+# class JobDetailView(DetailView):
+#     model = Job
+#     template_name =

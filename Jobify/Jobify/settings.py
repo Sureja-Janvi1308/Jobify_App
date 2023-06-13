@@ -62,6 +62,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    #session middelware
+    'django_session_timeout.middleware.SessionTimeoutMiddleware',
+
 ]
 
 ROOT_URLCONF = 'Jobify.urls'
@@ -130,7 +133,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
@@ -171,5 +174,9 @@ EMAIL_HOST_USER = 'janvi.test13@gmail.com'
 EMAIL_HOST_PASSWORD = 'hdgywpjdmxensvnq'
 EMAIL_PORT = 587
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
-# django_project/settings.py
 
+
+#session expire
+SESSION_EXPIRE_SECONDS = 3600 # Expire after 30 minutes
+SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
+SESSION_TIMEOUT_REDIRECT = 'loginPage' # Add your URL

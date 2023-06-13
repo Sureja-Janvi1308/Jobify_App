@@ -1,10 +1,13 @@
 from django.contrib import messages, auth
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, FormView, RedirectView
 
@@ -52,7 +55,6 @@ class RegisterEmployerView(CreateView):
         'title': 'Register'
     }
 
-
     def post(self, request, *args, **kwargs):
 
         form = self.form_class(data=request.POST)
@@ -79,13 +81,17 @@ class LoginView(FormView):
         'title': 'Login'
     }
 
+    def dispatch(self, request, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            return redirect(self.get_success_url())
+        return super().dispatch(request, *args, **kwargs)
+
     def form_valid(self, form):
         auth.login(self.request, form.get_user())
         return HttpResponseRedirect(self.get_success_url())
 
 
-class LogoutView(RedirectView):
-
+class LogoutView(LoginRequiredMixin, RedirectView):
     url = '/login'
 
     def get(self, request, *args, **kwargs):

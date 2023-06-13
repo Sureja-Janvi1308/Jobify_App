@@ -88,13 +88,6 @@
                             <a id="clientZone1" href="#" data-toggle="dropdown"
                                aria-haspopup="true" aria-expanded="false"
                                class="nav-link dropdown-toggle has-img mb-3 mb-lg-0 mt-3 mt-lg-0">
-<!--                                <div class="client-menu-image">-->
-<!--                                    <div class="inner">-->
-<!--                                        <img src="{% static 'img/company-1.png' %}"-->
-<!--                                             alt="company image"-->
-<!--                                             class="img-fluid">-->
-<!--                                    </div>-->
-<!--                                </div>-->
                                 {% if request.user.is_employee %}
                                      Welcome {{ request.user.first_name }} {{ request.user.last_name }}
                                 {% else %}

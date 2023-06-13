@@ -5,7 +5,7 @@ from crispy_forms.layout import Submit, Layout
 from crispy_forms.bootstrap import FormActions
 from django import forms
 
-from .models import EmployeeProfile, Employee
+from .models import EmployeeProfile
 
 
 class EmployeeProfileForm(forms.ModelForm):
@@ -87,11 +87,11 @@ class EmployeeProfileForm(forms.ModelForm):
         fields = ['first_name', 'last_name', 'email', 'phone_number', 'address_1', 'address_2', 'city', 'state',
                   'pincode', 'country', 'profile_pic']
 
-    # def __init__(self, *args, **kwargs):
-    #     super().__init__(*args, **kwargs)
-    #     self.helper = FormHelper()
-    #     self.helper.form_method = 'post'
-    #     self.helper.add_input(Submit('submit', 'Save'))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Save'))
 
     def clean_phone_number(self):
         phone_number = self.cleaned_data.get('phone_number')
@@ -106,14 +106,3 @@ class EmployeeProfileForm(forms.ModelForm):
         self.fields['email'].initial = user.email
 
 
-class EmployeeProfileFormContinue(forms.ModelForm):
-    class Meta:
-        model = Employee
-        exclude = ['user', 'company']
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Save'))
