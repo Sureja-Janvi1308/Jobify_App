@@ -50,9 +50,15 @@
             </button>
             <div id="navbarSupportedContent" class="collapse navbar-collapse" style="margin-right:-17.5rem" >
                 <ul class="navbar-nav ml-auto">
+                     {% if request.user.is_employee %}
                     <li class="nav-item active">
                         <a href="/" class="nav-link">Home <span class="sr-only">(current)</span></a>
                     </li>
+                    {% elif request.user.is_employer %}
+                    <li class="nav-item active">
+                        <a href="{% url 'dashboard' %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
+                    </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a href="#" class="nav-link">About Us</a>
                     </li>
@@ -76,7 +82,7 @@
                                 <a href="{% url 'employer-profile-view' %}" class="dropdown-item">View profile</a>
 
 
-                                <a href="{% url 'dashboard' %}" class="dropdown-item">Dashboard</a>
+
                                 <a href="" class="dropdown-item">Applicants </a>
                                 <a href="{% url 'employer-job-create' %}" class="dropdown-item">Post a new
                                     job </a>

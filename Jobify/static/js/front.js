@@ -1,7 +1,4 @@
-/*!
- * Bootstrap Job Board Template
- * Copyright 2016-2018, Ondrej Svestka
- */
+
 
 $(function () {
 

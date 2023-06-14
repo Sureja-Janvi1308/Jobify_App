@@ -46,20 +46,20 @@
                         <h2 class="heading">Find a <span class="accent">job</span> you will
                             <span class="accent">love</span>.
                         </h2>
-                        <form id="job-main-form" method="get" action="" class="job-main-form">
+                        <form id="job-main-form" method="get" action="{% url 'search-job' %}" class="job-main-form">
                             <div class="controls">
                                 <div class="row align-items-center">
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label for="profession">Position</label>
-                                            <input type="text" id="title" name="title"
+                                            <input type="text" id="title" name="s"
                                                    placeholder="Position you are looking for" class="form-control">
                                         </div>
                                     </div>
                                     <div class="col-md-5">
                                         <div class="form-group">
                                             <label for="location">Location</label>
-                                            <input type="text" id="location" name="{{ employee_profile.city }}"
+                                            <input type="text" id="city" name="q"
                                                    placeholder="Any particular location?" class="form-control">
                                         </div>
                                     </div>
@@ -84,21 +84,11 @@
                 {% for job in jobs %}
                     <div class="col-lg-4 mb-5 mb-lg-0">
                         <div class="box-image-text bg-visible full-height">
-                            <div class="top">
-                                <a href="#">
-                                    <div class="image">
-                                        <img src="{% static 'img/featured1.jpg' %}" alt="" class="img-fluid">
-                                    </div>
-                                    <div class="bg"></div>
-                                    <div class="logo">
-                                        <img src="{% static 'img/company-1.png' %}" alt="" style="max-width: 80px;">
-                                    </div>
-                                </a>
-                            </div>
+
                             <div class="content">
                                 <h5><a href="">{{ job.title }}</a></h5>
                                 <p class="featured__details"><i class="fa fa-map-marker job__location"></i>
-                                    {{ job.location }}
+                                    {{ job.user.employerprofile.city }}
                                     {% if job.type == 'full time' %}
                                         <span class="badge featured-badge badge-success">Full time</span>
                                     {% elif job.type == 'part time' %}
@@ -129,13 +119,13 @@
                                         <a href="">{{ trending.title }}</a>
                                     </h4>
                                     <p class="job__company">
-                                        {{ trending.company_name }}
+                                        {{ trending.user.employerprofile.company_name }}
                                     </p>
                                 </div>
                             </div>
                         </div>
                         <div class="col-10 col-md-3 col-lg-2 ml-auto"><i class="fa fa-map-marker job__location"></i>
-                            {{ employee_profile.city }}
+                            {{ trending.user.employerprofile.city }}
                         </div>
                         <div class="col-10 col-md-3 col-lg-3 ml-auto">
                             <p>Posted {{ trending.date_posted|timesince }}</p>

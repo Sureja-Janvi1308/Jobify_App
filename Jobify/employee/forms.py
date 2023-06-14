@@ -1,11 +1,11 @@
 import re
 
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Submit, Layout
+from crispy_forms.layout import Submit, Layout, Field, ButtonHolder
 from crispy_forms.bootstrap import FormActions
 from django import forms
 
-from .models import EmployeeProfile
+from .models import EmployeeProfile, Education, Experience, Skill
 
 
 class EmployeeProfileForm(forms.ModelForm):
@@ -104,5 +104,59 @@ class EmployeeProfileForm(forms.ModelForm):
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name
         self.fields['email'].initial = user.email
+
+
+class EducationForm(forms.ModelForm):
+    class Meta:
+        model = Education
+        exclude = ['user']
+        fields = ['institution_name', 'degree', 'field_of_study', 'start_date', 'end_date']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = self._set_form_helper()
+
+    def _set_form_helper(self):
+        helper = FormHelper()
+        helper.form_tag = False
+        helper.layout = Layout(
+            Field('institution_name', css_class='form-control'),
+            Field('degree', css_class='form-control'),
+            Field('field_of_study', css_class='form-control'),
+            Field('start_date', css_class='form-control'),
+            Field('end_date', css_class='form-control'),
+
+        )
+        helper.layout.append(ButtonHolder(Submit('submit', 'Submit', css_class='btn btn-primary')))
+        return helper
+
+
+
+class ExperienceForm(forms.ModelForm):
+    class Meta:
+        model = Experience
+        exclude = ['user']
+        fields = ['company_name', 'job_title','start_date', 'end_date', 'description']
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.helper = FormHelper()
+            self.helper.form_method = 'post'
+            self.helper.add_input(Submit('submit', 'Save'))
+
+class SkillForm(forms.ModelForm):
+    class Meta:
+        model = Skill
+        exclude = [' user']
+        fields = ['name', 'years_of_experience']
+
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            self.helper = FormHelper()
+            self.helper.form_method = 'post'
+            self.helper.add_input(Submit('submit', 'Save'))
+
+
+
 
 

@@ -10,7 +10,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    <h1 class="heading">dashboard</h1>
+                    <h1 class="heading">Dashboard</h1>
                     <p class="lead text-center">All created jobs</p>
                 </div>
             </div>
@@ -38,7 +38,7 @@
                             {% for job in jobs %}
 
                                 <tr>
-                                    <th><a href="{% url 'job-detail-view' %}">{{ job.title }}</a>
+                                    <th><a href="">{{ job.title }}</a>
                                     </th>
                                     <td>
                                         {% if job.is_active %}
