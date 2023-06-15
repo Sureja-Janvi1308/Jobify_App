@@ -66,7 +66,7 @@ class RegisterEmployerView(CreateView):
             user.save()
             return redirect('loginPage')
         else:
-            return render(request, 'Accounts/employer/register.html', {'form': form})
+            return render(request, 'Accounts/employer/register.html', {'form': form })
 
 
 class LoginView(FormView):

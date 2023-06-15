@@ -3,9 +3,12 @@
 {% load crispy_forms_tags %}
 
 {% block content %}
+ <div class=" mt-5 col-lg-6 offset-3 text-uppercase ">
+        <div class="box border border-dark">
+            <h3 class="heading">Create Profile</h3>
   <form method="post">
     {% csrf_token %}
-    <div class="form-row">
+    <div class="form-row ">
       <div class="form-group col-md-6 mb-0">
         {{ form.first_name|as_crispy_field }}
       </div>
@@ -40,9 +43,11 @@
     </div>
     {{ form.country|as_crispy_field }}
        <div class="text-center">
-                    <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Create Profile
+                    <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Save
                     </button>
                 </div>
 
   </form>
+</div>
+ </div>
 {% endblock %}

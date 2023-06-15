@@ -109,7 +109,7 @@ class EmployeeProfileForm(forms.ModelForm):
 class EducationForm(forms.ModelForm):
     class Meta:
         model = Education
-        exclude = ['user']
+        exclude = ['user', 'user_id']
         fields = ['institution_name', 'degree', 'field_of_study', 'start_date', 'end_date']
 
     def __init__(self, *args, **kwargs):

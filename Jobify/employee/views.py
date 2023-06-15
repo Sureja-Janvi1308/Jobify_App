@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
-from django.forms import  modelformset_factory
+from django.forms import modelformset_factory
 from authentication.models import CustomUser
 from company.models import Job, EmployerProfile
 from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm
@@ -112,7 +112,7 @@ class EducationCreateView(CreateView):
     model = Education
     form_class = EducationForm
     template_name = 'Accounts/employee/create-education.html'
-    success_url = 'employee-exp-profile'
+    success_url = reverse_lazy('employee-exp-profile')
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -122,37 +122,83 @@ class EducationCreateView(CreateView):
             data['formset'] = EducationFormSet()
         return data
 
-
     def form_valid(self, form):
         formset = EducationFormSet(self.request.POST, queryset=Education.objects.none())
         if formset.is_valid():
-            form.instance.user = self.request.user.employeeprofile
+            form.instance.user = self.request.user
             self.object = form.save()
-            formset.instance = self.object
-            formset.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.user = self.request.user
+                instance.save()
+
             return redirect(self.get_success_url())
         else:
             return super().form_invalid(form)
 
-EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=1)
+
+EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
+
 
 class ExperienceCreateView(CreateView):
     model = Experience
     form_class = ExperienceForm
     template_name = 'Accounts/employee/create-experience.html'
-    success_url = 'employee-skills-profile'
+    success_url = reverse_lazy('employee-skill-profile')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = ExperienceFormSet(self.request.POST)
+        else:
+            data['formset'] = ExperienceFormSet()
+        return data
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+        formset = ExperienceFormSet(self.request.POST, queryset=Experience.objects.none())
+        if formset.is_valid():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.user = self.request.user
+                instance.save()
+
+            return redirect(self.get_success_url())
+        else:
+            return super().form_invalid(form)
+
+
+ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
+
 
 class SkillCreateView(CreateView):
     model = Skill
     form_class = SkillForm
     template_name = 'Accounts/employee/create-skills.html'
-    success_url = 'employee-profile-view'
+    success_url = reverse_lazy('employee-profile-view')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = SkillFormSet(self.request.POST)
+        else:
+            data['formset'] = SkillFormSet()
+        return data
 
     def form_valid(self, form):
-        form.instance.user = self.request.user
-        return super().form_valid(form)
+        formset = SkillFormSet(self.request.POST, queryset=Skill.objects.none())
+        if formset.is_valid():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.user = self.request.user
+                instance.save()
 
+            return redirect(self.get_success_url())
+        else:
+            return super().form_invalid(form)
+
+
+SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)

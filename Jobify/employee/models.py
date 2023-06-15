@@ -60,7 +60,7 @@ class TimeStamped(models.Model):
 
 
 class Education(TimeStamped):
-    user = models.ForeignKey(EmployeeProfile, related_name='educations' , on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='educations' , on_delete=models.CASCADE)
     institution_name = models.CharField(max_length=100)
     degree = models.CharField(max_length=100)
     field_of_study = models.CharField(max_length=100)
@@ -69,7 +69,7 @@ class Education(TimeStamped):
 
 
 class Experience(TimeStamped):
-    user = models.ForeignKey(EmployeeProfile,related_name='experiences', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='experiences', on_delete=models.CASCADE)
     company_name = models.CharField(max_length=100)
     job_title = models.CharField(max_length=100)
     start_date = models.DateField()
@@ -78,7 +78,7 @@ class Experience(TimeStamped):
 
 
 class Skill(TimeStamped):
-    user = models.ForeignKey(EmployeeProfile,related_name='skills',  on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='skills',  on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     years_of_experience = models.IntegerField()
 
