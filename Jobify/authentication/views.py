@@ -40,9 +40,9 @@ class RegisterEmployeeView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
-            return redirect('loginPage')
+            return redirect('Homepage')
         else:
-            return render(request, 'Accounts/employee/register.html', {'form': form})
+            return render(request, 'Accounts/employee/register.html', {'form': form })
 
 
 class RegisterEmployerView(CreateView):
@@ -64,7 +64,7 @@ class RegisterEmployerView(CreateView):
             password = form.cleaned_data.get("password1")
             user.set_password(password)
             user.save()
-            return redirect('loginPage')
+            return redirect('dashboard')
         else:
             return render(request, 'Accounts/employer/register.html', {'form': form })
 

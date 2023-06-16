@@ -2,7 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
@@ -202,3 +202,41 @@ class SkillCreateView(CreateView):
 
 
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+
+
+class ExperienceUpdateView(UpdateView):
+    model = Experience
+    form_class = ExperienceForm
+
+    template_name = 'Accounts/employee/edit-experience.html'
+    success_url = reverse_lazy('employee-profile-view')
+
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.POST:
+            data['formset'] = ExperienceFormSet(self.request.POST, instance=self.object)
+        else:
+            data['formset'] = ExperienceFormSet(instance=self.object)
+        return data
+
+    def get_object(self, queryset=None):
+        obj, created = Experience.objects.get_or_create(id=self.kwargs['exp_id'])
+        return obj
+
+    def get_context_object_name(self, obj):
+        obj['formset'] = 'formset'
+        return obj
+
+    def form_valid(self, form):
+        formset = ExperienceFormSet(self.request.POST, instance=self.object)
+        if formset.is_valid():
+            form.instance.user = self.request.user
+            self.object = form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.user = self.request.user
+                instance.save()
+                messages.success(self.request, "The Profile was updated successfully.")
+                return redirect(self.get_success_url())
+        else:
+            return super().form_invalid(form)

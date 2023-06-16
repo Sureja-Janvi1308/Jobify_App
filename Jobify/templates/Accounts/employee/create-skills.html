@@ -2,8 +2,12 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'css/button_style.css' %}">
 
 <form class="form-horizontal" method="POST" action="" >
+     <div class=" mt-5 col-lg-6 offset-3 text-uppercase text-bold ">
+        <div class="box border border-dark">
+            <h3 class="heading">Skills Profile</h3>
     {% csrf_token %}
     {{ form|crispy }} <hr> <br>
 
@@ -19,8 +23,16 @@
     {% endfor %}
         </div><br/>
     <div id="empty-form" class="hidden d-none" >{{ formset.empty_form|crispy }}</div>
-    <button type="button" id="add-more">Add More </button>
-    <button type="submit" > Submit </button>
+      <div class="col-lg-10 text-right mb-5">
+
+            <button type="button" class="btn btn-outline-white-primary d-flex justify-content-end" id="add-more"><i class="fa fa-plus"></i>Add More</button>
+      </div>
+     <div class="text-center">
+                    <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Save
+                    </button>
+                </div>
+        </div>
+     </div>
 </form>
 
 <script>

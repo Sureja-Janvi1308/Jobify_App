@@ -122,7 +122,7 @@ class EmployerRegistrationForm(UserCreationForm):
 
     def save(self, commit=True):
         user = super(UserCreationForm, self).save(commit=False)
-        print('gvdfggd')
+
         user.is_employer = True
         if commit:
             user.save()

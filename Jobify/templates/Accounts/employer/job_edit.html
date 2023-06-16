@@ -2,13 +2,21 @@
 
 {% load crispy_forms_tags %}
 {% block content %}
-<h1>Edit job details</h1>
+
 <form method="post" enctype="multipart/form-data">
+    <div class=" mt-5 col-lg-6 offset-3 text-capitalize">
+        <div class="box border border-dark">
+            <h3 class="heading">Update Job Details</h3>
 {% csrf_token %}
-    <h2>{{ job.title }}</h2>
+    <h3 class="text-capitalize">{{ job.user.employerprofile.company_name }} --
+        {{ job.title }}</h3>
 {{ form|crispy }}
     <input type="hidden" name="job_id" id="job_id" value="{{ job.id }}">
-<button type="submit">Update job</button>
-
+   <div class="text-center">
+                    <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Update
+                    </button>
+                </div>
+        </div>
+    </div>
 </form>
 {% endblock %}

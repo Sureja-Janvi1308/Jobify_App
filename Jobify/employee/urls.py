@@ -12,6 +12,7 @@ urlpatterns = [
     path('employee/educationdetails/', EducationCreateView.as_view(), name='employee-edu-profile'),
     path('employee/experiencedetails/', ExperienceCreateView.as_view(), name='employee-exp-profile'),
     path('employee/skillsdetails/', SkillCreateView.as_view(), name='employee-skill-profile'),
+    path('employee/updateexperience/', ExperienceUpdateView.as_view(), name='edit-experience'),
 
 
 

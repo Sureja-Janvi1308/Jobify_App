@@ -1,0 +1,11 @@
+
+    .delete-form{
+        background-color:white;
+        color:red;
+        border:1px solid red;
+        padding:0.5em 0.8em;
+        font-size:1em;
+        text:center;
+        font-weight:bold;
+        text-align:justify;
+    }

@@ -42,21 +42,18 @@
         <div class="container">
             <a href="/" class="navbar-brand">
                 <span class="navbar-brand text-white mb-2 h1" style="margin-left: -18.75rem;">JOBIFY</span>
-                <span class="sr-only">Home</span>
+
             </a>
-            <button type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
-                    class="navbar-toggler navbar-toggler-right">Menu<i class="fa fa-bars"></i>
-            </button>
+
             <div id="navbarSupportedContent" class="collapse navbar-collapse" style="margin-right:-17.5rem" >
                 <ul class="navbar-nav ml-auto">
                      {% if request.user.is_employee %}
                     <li class="nav-item active">
-                        <a href="/" class="nav-link">Home <span class="sr-only">(current)</span></a>
+                        <a href="{% url 'Homepage' %}" class="nav-link">Home <span class="sr-only"></span></a>
                     </li>
-                    {% elif request.user.is_employer %}
+                    {% else %}
                     <li class="nav-item active">
-                        <a href="{% url 'dashboard' %}" class="nav-link">Home <span class="sr-only">(current)</span></a>
+                        <a href="{% url 'dashboard' %}" class="nav-link">Home <span class="sr-only"></span></a>
                     </li>
                     {% endif %}
                     <li class="nav-item">
@@ -139,7 +136,7 @@
 
 <div class="alert alert-warning alert-dismissible fade show" id="myAlert" role="alert">
 <strong>{{message}}</strong>
-<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
 </div>
 
 
