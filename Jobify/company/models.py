@@ -56,7 +56,7 @@ class Job(models.Model):
 
 class Applicants(models.Model):
     job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name='applicants')
-    applicant = models.ForeignKey(EmployerProfile, related_name='applied', on_delete=models.CASCADE)
+    applicant = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='applied', on_delete=models.CASCADE)
     is_selected = models.BooleanField(default=False)
     date_posted = models.DateTimeField(default=timezone.now)
 

@@ -149,6 +149,7 @@ class ApplicantPerJobView(ListView):
         return context
 
 
+
 class ApplicantsListView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/all-applicants.html'

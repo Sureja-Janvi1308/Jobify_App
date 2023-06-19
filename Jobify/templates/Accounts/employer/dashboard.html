@@ -52,7 +52,7 @@
                                     <td>
                                         <a href="{% url 'applicants-view' job.id %}"
                                            class="btn btn-success">
-                                            <i class="fa fa-users"></i>
+                                            <i class="fa fa-users"></i>{{ job.applicants.count }}
                                             <span class="hidden-xs hidden-sm">Applicants</span>
                                         </a>
                                     </td>

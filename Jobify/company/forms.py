@@ -4,7 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit
 from django import forms
 
-from company.models import EmployerProfile, Job
+from company.models import EmployerProfile, Job, Applicants
 
 
 class EmployerProfileForm(forms.ModelForm):
@@ -93,3 +93,9 @@ class CreateJobForm(forms.ModelForm):
         if not position.is_numeric():
             raise forms.ValidationError('No of position required should be in numbers only')
         return position
+
+
+class ApplyJobForm(forms.ModelForm):
+    class Meta:
+        model = Applicants
+        fields = ('job',)

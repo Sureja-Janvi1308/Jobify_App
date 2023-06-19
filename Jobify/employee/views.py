@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -9,7 +10,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
 from django.forms import modelformset_factory
 from authentication.models import CustomUser
-from company.models import Job, EmployerProfile
+from company.forms import ApplyJobForm
+from company.models import Job, EmployerProfile, Applicants
 from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm
 from employee.models import EmployeeProfile, Education, Experience, Skill
 
@@ -204,39 +206,88 @@ class SkillCreateView(CreateView):
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
 
 
-class ExperienceUpdateView(UpdateView):
-    model = Experience
-    form_class = ExperienceForm
+# class ExperienceUpdateView(UpdateView):
+#     model = Experience
+#     form_class = ExperienceForm
+#
+#     template_name = 'Accounts/employee/edit-experience.html'
+#     success_url = reverse_lazy('employee-profile-view')
+#
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.request.POST:
+#             data['formset'] = ExperienceFormSet(self.request.POST, instance=self.object)
+#         else:
+#             data['formset'] = ExperienceFormSet(instance=self.object)
+#         return data
+#
+#     def get_object(self, queryset=None):
+#         obj, created = Experience.objects.get_or_create(id=self.kwargs['exp_id'])
+#         return obj
+#
+#     def get_context_object_name(self, obj):
+#         obj['formset'] = 'formset'
+#         return obj
+#
+#     def form_valid(self, form):
+#         formset = ExperienceFormSet(self.request.POST, instance=self.object)
+#         if formset.is_valid():
+#             form.instance.user = self.request.user
+#             self.object = form.save()
+#             instances = formset.save(commit=False)
+#             for instance in instances:
+#                 instance.user = self.request.user
+#                 instance.save()
+#                 messages.success(self.request, "The Profile was updated successfully.")
+#                 return redirect(self.get_success_url())
+#         else:
+#             return super().form_invalid(form)
 
-    template_name = 'Accounts/employee/edit-experience.html'
-    success_url = reverse_lazy('employee-profile-view')
 
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['formset'] = ExperienceFormSet(self.request.POST, instance=self.object)
-        else:
-            data['formset'] = ExperienceFormSet(instance=self.object)
-        return data
+class JobDetailView(DetailView):
+    model = Job
+    template_name = 'Accounts/employee/detail.html'
+    context_object_name = 'job'
 
     def get_object(self, queryset=None):
-        obj, created = Experience.objects.get_or_create(id=self.kwargs['exp_id'])
-        return obj
+        job_id = self.kwargs['job_id']
 
-    def get_context_object_name(self, obj):
-        obj['formset'] = 'formset'
-        return obj
+        job = get_object_or_404(Job, id=job_id)
+
+        return job
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        job_id = self.kwargs['job_id']
+
+        job = get_object_or_404(Job, id=job_id)
+
+        context['job'] = job
+        return context
+
+
+class ApplyJobView(CreateView):
+    model = Applicants
+    form_class = ApplyJobForm
+    slug_field = 'job_id'
+    slug_url_kwarg = 'job_id'
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        if form.is_valid():
+            messages.info(self.request, 'Successfully applied for this Job')
+            return self.form_valid(form)
+        else:
+            return HttpResponseRedirect(reverse_lazy('Homepage'))
+
+
 
     def form_valid(self, form):
-        formset = ExperienceFormSet(self.request.POST, instance=self.object)
-        if formset.is_valid():
-            form.instance.user = self.request.user
-            self.object = form.save()
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.user = self.request.user
-                instance.save()
-                messages.success(self.request, "The Profile was updated successfully.")
-                return redirect(self.get_success_url())
-        else:
-            return super().form_invalid(form)
+        applicants = Applicants.objects.filter(applicant=self.request.user.id, job_id=self.kwargs['job_id'])
+        if applicants:
+            messages.info(self.request, 'You have already applied for this Job')
+            return HttpResponseRedirect(reverse_lazy('Homepage'))
+        form.instance.applicant = self.request.user
+        form.save()
+        return self.form_valid(form)
+
