@@ -15,6 +15,7 @@ urlpatterns = [
     # path('employee/updateexperience/', ExperienceUpdateView.as_view(), name='edit-experience'),
     path('jobdetails/<int:job_id>/', JobDetailView.as_view(), name='job-detail'),
     path('applyjob/<int:job_id>/', ApplyJobView.as_view(), name='apply-job'),
+    path('downloadresume/', GenerateResumeView.as_view(), name='resume-builder')
 
 
 

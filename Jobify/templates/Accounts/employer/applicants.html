@@ -21,10 +21,10 @@
                 {% for applicant in applicants %}
                     <div class="col-lg-6">
                         <div class="box applicant">
-                            <h4>{{ applicant.applicant.first_name }}</h4>
+                            <h4>{{ applicant.applicant.get_full_name }}</h4>
                             <a href="#" data-toggle="modal" data-target="#contact-modal"
                                class="btn btn-outline-white-secondary btn-sm">
-                                <i class="fa fa-envelope"></i>Contact
+                                <i class="fa fa-envelope"></i>{{ applicant.applicant.employeeprofile.phone_number }}
                             </a>
                             <p>
                                 <span class="badge badge-info">Applied {{ applicant.date_posted.astimezone }}</span>
@@ -32,7 +32,7 @@
                             <div class="d-flex justify-content-between">
                                 <p class="intro"></p>
                                 <div class="image">
-                                    <img src="{{ applicant.applicant.profile_pic.url }}" alt="njhuih"
+                                    <img src="{{ applicant.applicant.employeeprofile.profile_pic.url }}" alt="njhuih"
                                          class="img-fluid rounded-circle">
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
                         </div>
                     </div>
                 {% else %}
-                    <h3>You are end</h3>
+
                 {% endif %}
             </div>
         </div>

@@ -2,11 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, HttpResponse
 from django.shortcuts import redirect, get_object_or_404
+from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.views import View
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
 from django.forms import modelformset_factory
 from authentication.models import CustomUser
@@ -290,4 +292,36 @@ class ApplyJobView(CreateView):
         form.instance.applicant = self.request.user
         form.save()
         return self.form_valid(form)
+
+
+class GenerateResumeView(View):
+    def get(self, request):
+        user=self.request.user
+        employee_profile = EmployeeProfile.objects.get(user=user)
+        educations = Education.objects.filter(user=user)
+        experiences = Experience.objects.filter(user=user)
+        skills = Skill.objects.filter(user=user)
+
+        template = get_template('Accounts/employee/view.html')
+        context = {
+            'employee_profile': employee_profile,
+            'educations': educations,
+            'experiences': experiences,
+            'skills':skills
+
+        }
+        rendered_template = template.render(context)
+        response = HttpResponse(content_type='application/pdf')
+        response['content-Disposition'] = 'attachment; filename="resume.pdf"'
+
+        from xhtml2pdf import pisa
+        pisaStatus = pisa.CreatePDF(rendered_template, dest=response)
+        if pisaStatus.err:
+            return HttpResponse('An Error ouccured While Generating the resume')
+        return response
+
+
+
+
+
 
