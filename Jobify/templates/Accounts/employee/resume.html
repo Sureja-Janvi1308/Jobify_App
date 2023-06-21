@@ -1,307 +1,320 @@
+<!doctype html>
 {% load static %}
-<html><head>
-  	<title>Resume</title>
-  	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  	<meta name="viewport" content="width=device-width, initial-scale=1">
-    
-<link href="https://fonts.googleapis.com/css?family=Lato:400,700,900" rel="stylesheet">
-       <meta name="language" content="English">
-          <meta charset="utf-8">
-          <meta http-equiv="X-UA-Compatible" content="IE=edge">
-          <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-          <meta property="og:locale" content="en_US">
-          <meta property="og:type" content="website">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
 
-          <meta name="description" content="Are you looking for creative Website Design Company in Delhi? Get user friendly professional and E-commerce web development services. Join the innovators.">
+    <title>Download Resume</title>
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
 
-                    
+body {
+  height: 100%;
 
-      <meta name="keywords" content="web designing Delhi, website design Delhi, web Design Company in Delhi, web designing companies in Delhi, md aqil">
+  font-family: 'Arial', sans-serif;
+  font-weight: 400;
+  color: #222;
+  font-size: 14px;
+  height: 26px;
+  padding-bottom: 50px;
+}
+
+.container {
+  width: 700px;
+  background: aliceblue;
+  margin: 0px auto 0px;
+  border-radius: 3px;
+  padding: 40px;
+  margin-top: 50px;
+}
+
+.header {
+  margin-bottom: 30px;
+  }
+
+  .full-name {
+    font-size: 40px;
+    margin-bottom: 5px;
+  }
+
+  .first-name {
+    font-weight: 700;
+    text-transform:uppercase;
+  }
+
+  .last-name {
+    font-weight: 300;
+    text-transform:uppercase;
+  }
+
+  .contact-info {
+    margin-bottom: 20px;
+  }
+
+  .email ,
+  .phone {
+    color: #999;
+    font-weight: 300;
+  }
+
+  .separator {
+    height: 10px;
+
+    border-left: 2px solid #999;
+    margin: 0px 10px;
+  }
 
 
-      <meta property="og:title" content="Are you looking for creative Website Design Company in Delhi? Get user friendly professional and E-commerce web development services.">
-
-      <meta property="og:description" content="Are you looking for creative Website Design Company in Delhi? Get user friendly professional and E-commerce web development services. Join the innovators.
-    ">
-      <meta property="og:url" content="https://mdaqil.tk/">
-
-      <meta property="og:image" content="https://mdaqil.tk/img/main-screen.jpg">
-
-<link rel="stylesheet" href="{% static 'css/resume.css' %}" >
 
 
 
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script type="text/javascript" async="" src="https://www.google-analytics.com/analytics.js"></script><script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-111268069-2"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
+.details {
+  line-height: 20px;
+}
+  .section {
+    margin-bottom: 40px;
+  }
 
-      gtag('config', 'UA-111268069-2');
-    </script>
+  .section:last-of-type {
+    margin-bottom: 0px;
+  }
+
+  .section__title {
+    letter-spacing: 2px;
+    color: #54AFE4;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .section__list-item {
+    margin-bottom: 40px;
+  }
+
+  .section__list-item:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .left ,
+  .right {
+    vertical-align: top;
+
+  }
+
+  .left {
+    width: 60%;
+  }
+
+  .right {
+    tex-align: right;
+    width: 39%;
+  }
+
+  .name {
+    font-weight: bold;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
+    font-style: italic;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    color: #000;
+  }
+
+
+  .skills__item {
+    margin-bottom: 10px;
+  }
+
+  .skills__item .right {
+
+}
+    label {
+      width: 20px;
+      height: 20px;
+      background: #C3DEF3;
+      border-radius: 20px;
+      margin-right: 3px;
+    }
+
+    input:checked + label {
+      background: #79A9CE;
+    }
+
+
+
+    </style>
 
 </head>
+<body>
 
-  
-  <body>
-  
-  <div class="resmue-container">
-  		<nav>
-  		<a href="index.html">Home</a>
-  		<a href="" onclick="print()">Print</a>
-  	</nav>
-<div style="display: flex;">
-	<aside>
-		<section class="text-center" style="padding:0">
-			<img class="porfile-pic" src="img/designer.jpeg" alt="">
-			<h2 style="margin-bottom: 5px">Md Aqil</h2>
-			<small class="text-muted">UI / UX DESIGNER/DEVELOPER</small>
-      <p class="text-muted">
-         <small>
-        <b>Phone:</b> +91 7210562014</small>
-      </p>
-     <p class="text-muted">
-        <small>
-        <b>Email:</b> aqilali381@gmail.com
-          
-        </small>
-     </p>
-       
-      
-		</section>
-		<section>
-			<h3 class="line-title center">About Me</h3>
-			<p class="read">Computers have been my passion from ever. I could spend hours learning about coding and designing. However, this passion got wings when I grabbed a job as a UI/UX designer and developer. Though money cannot be totally ignored, even if it wasn’t there, I couldn’t be separated from designing and coding. I think I can totally relate to how
-</p>
-		</section>
-	   <section>
-        <h3 class="line-title center">Skills</h3>
-        <ul class="skill-list">
-                    <li>HTML</li>
-                    <li>CSS</li>
-                    <li>SASS</li>
-                    <li>JavaScript</li>
-                    <li>jQuery</li>
-                    <li>AJAX</li>
-                    <li>Bootstrap</li>
-                    <li>Materialize</li>
-                    <li>Wordpress</li>
-                   <li>Photoshop</li>
-                   <li>Illustrator</li>
-                   <li>adobe premiere pro</li>
-
-                         <li> CSS3 Keyframe</li>
-                      <li>
-                      Greensock/GSAP
-                      </li>
-                      <li>SVG and Canvas</li>
-                      <li> Animate.css, wow.js, scrollMagic</li>
-
-                      <li>
-                        <b>Understanding</b> of (PHP, MYSQL, Gulp)
-                      </li>
-
-                  </ul>
- 
-      </section>
-      <section> 
-          <h3 class="line-title center">Education</h3>
-        <p class="read">
-          R. B. Jalan College, Mithila University
-          Darbhanga, Bihar
-          Bachelor of Arts
-          Pursuing B.A. at Mithila University.
-        </p>
-
-      </section>
-	</aside>
-	<main>
-		<section>
-			<h3 class="line-title">Objective</h3>
-			<article class="flex-group">
-			
-				<div class="full">
-					
-					<p class="read">I want to execute my ideas through my designing skills for benefit of my company. I have intuitive knowledge of designing which will help me to grow my career with my company.</p>
-				</div>
-			</article>
-		</section>
-			<section>
-
-			<h3 class="line-title">Experience <small class="text-muted">(3 years)</small></h3>
-
-			<article class="flex-group">
-
-				<div class="short">
-					<h4>Edunuts.com</h4>
-					<p>
-            Naurang House, 21 KG Marg Connaught Place, New Delhi -110001
-         </p><hr>
-         <small>
-          1-1 -2015 to 4-11-2017
-           
-         </small>
-        <p></p>
-				</div>
-
-				<div class="full">
-					<a href="http://edunuts.com">Lead UI/UX Developer</a>
-					<p class="read">
-       I had done UI Development and UI Designing in the whole website. I had used Html5, Css3, Jquery, Javascript, Animate.css, Bootstrap.css, Green shock animation to develop the website dynamically and make it most user-friendly. I had given it graphics from Adobe Photoshop and Illustrator. I had made my best efforts to make it better than something most better.     
-          </p>
-				</div>
-			</article>
+<div class="container">
+  <div class="header">
+    <div class="full-name">
+      <span class="first-name">{{ employee_profile.first_name }}</span>
+      <span class="last-name">{{ employee_profile.last_name }}</span>
+    </div>
+    <div class="contact-info">
+      <span class="email">Email: </span>
+      <span class="email-val">{{ employee_profile.email }}</span>
+      <span class="separator"></span>
+      <span class="phone">Phone: </span>
+      <span class="phone-val">{{ employee_profile.phone_number }}</span>
+    </div>
 
 
-        <article class="flex-group">
-        <div class="short">
-          <h4>bigly.io</h4>
-          <p>
-            
-            Bigly Technologies Pvt. Ltd.
-            N-21, Sec. 18, Noida, Uttar Pradesh: 201301
-            </p><hr>
-            <small>
-              
-            November-2017 - Currently
-            </small>
-          <p></p>
-        </div>
-        <div class="full">
-          <a href="http://bigly.io">Lead UI/UX Developer </a>
-          <p class="read">
-            I had worked on two websites, E-Commerce Seller Service Provider &amp; Dropshipping. I had used same skills here to develop the whole business of team Bigly.
-          </p>
-        </div>
-      </article>
-
-		</section>
-
-
-			<section>
-			<h3 class="line-title">Project Completed</h3>
-  			<article class="flex-group">
-  				<div class="short">
-  					<h4><a href="">Edunuts.com</a></h4>
-  					<p>UI/Design &amp; Developer</p>
-  				</div>
-  				<div class="full">
-  					
-  					<p class="read">
-              Edunuts is a mission to empower students, in making the best career decisions based on correct information and insights from data.     
-            </p>
-             <hr>
-  				</div>
-  			</article>
-
-        
-        <article class="flex-group">
-          <div class="short">
-            <h4><a href="">bigly.io</a></h4>
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            
-            <p class="read">
-              bigly.io is India's First platform to Import Products at  Online Store without Keeping Inventory.
-            </p>
-            <hr>
-          </div>
-        </article>
-
-          <article class="flex-group">
-          <div class="short">
-            <h4><a href="">bigradar.io</a></h4>
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            
-            <p class="read">
-              
-           BigRadar is a subsidiary company of Edunuts.com. I had done all the previous work here too by using Html5, Css3, Jquery, Javascript, Animate.css, Bootstrap.css &amp; Parallax. Js.
-
-
-            </p>
-          <hr>
-          </div>
-        </article>
-
-        <article class="flex-group">
-          <div class="short">
-            <h4><a href="http://www.edunuts.com/academy/">Edunuts Academy</a></h4>
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            <p class="read">
-              
-           Edunuts Academy is a subsidiary company of Edunuts.com. I had done all the previous work here too by using Html5, Css3, Jquery, Javascript, Animate.css, Bootstrap.css  
-
-
-            </p>
-          <hr>
-          </div>
-        </article>
-
-         <article class="flex-group">
-          <div class="short">
-            <h4><a href="http://www.sketchut.com/">Sketchut</a></h4>
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            <p class="read">
-              </p><h1>&nbsp;</h1>
-            <p></p>
-          <hr>
-          </div>
-        </article>
-
-  
-        <article class="flex-group">
-          <div class="short">
-            <h4><a href="http://www.dmadelhi.com/">DMA Delhi</a></h4>
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            <p class="read">
-              
-            dmadelhi.com is a subsidiary company of Edunuts.com. I had done all the previous work here too by using Html5, Css3, Jquery, Javascript, Animate.css, Bootstrap.css &amp; Parallax. Js.
-
-            </p>
-          <hr>
-          </div>
-        </article>
-       
-        <article class="flex-group">
-          <div class="short">
-            <h4><a href="http://dropship.bigly.io">Bigly Dropship</a></h4>
-
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            <p class="read">
-              </p><h1>&nbsp;</h1>
-            <p></p>
-          <hr>
-          </div>
-        </article>
-
-        <article class="flex-group">
-          <div class="short">
-            <h4><a href="http://finishit.in">Finishit.in</a></h4>
-
-            <p>UI/Design &amp; Developer</p>
-          </div>
-          <div class="full">
-            <p class="read">When you don't know how to get things done,come to us Finish-It get things done for you,over a call or chat. It does a great job by making your life easier</p>
-          <hr>
-          </div>
-        </article>
-
-		</section>
-
-    
-	</main>
-</div>
-  
   </div>
+   <div class="details">
+    <div class="section">
+      <div class="section__title">Experience</div>
+      <div class="section__list">
+        <div class="section__list-item">
+          <div class="left">
+            <div class="name">{{ experiences.company_name }}</div>
+            <div class="addr">San Fr, CA</div>
+            <div class="duration">Jan 2011 - Feb 2015</div>
+          </div>
+          <div class="right">
+            <div class="name">Fr developer</div>
+            <div class="desc">did This and that</div>
+          </div>
+        </div>
+                <div class="section__list-item">
+          <div class="left">
+            <div class="name">Akount</div>
+            <div class="addr">San Monica, CA</div>
+            <div class="duration">Jan 2011 - Feb 2015</div>
+          </div>
+          <div class="right">
+            <div class="name">Fr developer</div>
+            <div class="desc">did This and that</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+    <div class="section">
+      <div class="section__title">Education</div>
+      <div class="section__list">
+        <div class="section__list-item">
+            {% for education in educations %}
+          <div class="left">
+            <div class="name">{{ education.institution_name }}</div>
+            <div class="addr">San Fr, CA</div>
+            <div class="duration">Jan 2011 - Feb 2015</div>
+          </div>
+          <div class="right">
+            <div class="name">Fr developer</div>
+            <div class="desc">did This and that</div>
+          </div>
+            {% endfor %}
+        </div>
+        <div class="section__list-item">
+          <div class="left">
+            <div class="name">Akount</div>
+            <div class="addr">San Monica, CA</div>
+            <div class="duration">Jan 2011 - Feb 2015</div>
+          </div>
+          <div class="right">
+            <div class="name">Fr developer</div>
+            <div class="desc">did This and that</div>
+          </div>
+        </div>
+
+      </div>
+
+  </div>
+     <div class="section">
+      <div class="section__title">Projects</div>
+       <div class="section__list">
+         <div class="section__list-item">
+           <div class="name">DSP</div>
+           <div class="text">I am a front-end developer with more than 3 years of experience writing html, css, and js. I'm motivated, result-focused and seeking a successful team-oriented company with opportunity to grow.</div>
+         </div>
+
+         <div class="section__list-item">
+                    <div class="name">DSP</div>
+           <div class="text">I am a front-end developer with more than 3 years of experience writing html, css, and js. I'm motivated, result-focused and seeking a successful team-oriented company with opportunity to grow. <a href="/login">link</a>
+           </div>
+         </div>
+       </div>
+    </div>
+     <div class="section">
+       <div class="section__title">Skills</div>
+       <div class="skills">
+         <div class="skills__item">
+           <div class="left"><div class="name">
+             Javascript
+             </div></div>
+           <div class="right">
+                          <input  id="ck1" type="checkbox" checked/>
+
+             <label for="ck1"></label>
+                          <input id="ck2" type="checkbox" checked/>
+
+              <label for="ck2"></label>
+                         <input id="ck3" type="checkbox" />
+
+              <label for="ck3"></label>
+                           <input id="ck4" type="checkbox" />
+            <label for="ck4"></label>
+                          <input id="ck5" type="checkbox" />
+              <label for="ck5"></label>
+
+           </div>
+         </div>
+
+       </div>
+       <div class="skills__item">
+           <div class="left"><div class="name">
+             CSS</div></div>
+           <div class="right">
+                          <input  id="ck6" type="checkbox" checked/>
+
+             <label for="ck1"></label>
+                          <input id="ck7" type="checkbox" checked/>
+
+              <label for="ck2"></label>
+                         <input id="ck8" type="checkbox" />
+
+              <label for="ck3"></label>
+                           <input id="ck9" type="checkbox" />
+            <label for="ck4"></label>
+                          <input id="ck10" type="checkbox" />
+              <label for="ck5"></label>
+
+           </div>
+         </div>
+
+       </div>
+     <div class="section">
+     <div class="section__title">
+       Interests
+       </div>
+       <div class="section__list">
+         <div class="section__list-item">
+                  Football, programming.
+          </div>
+       </div>
+     </div>
+     </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,9 +1,12 @@
+from io import BytesIO
+from xhtml2pdf import pisa
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect, HttpResponse
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.template.loader import get_template
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -98,18 +101,69 @@ class EmployeeProfileUpdateView(UpdateView):
     def get_object(self, queryset=None):
         return self.request.user.employeeprofile
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
+        ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
+        SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+
+        if self.request.POST:
+            data['education_formset'] = EducationFormSet(self.request.POST, prefix='education')
+            data['experience_formset'] = ExperienceFormSet(self.request.POST, prefix='experience')
+            data['skill_formset'] = SkillFormSet(self.request.POST, prefix='skill')
+
+        else:
+            data['education_formset'] = EducationFormSet(prefix='education')
+            data['experience_formset'] = ExperienceFormSet(prefix='experience')
+            data['skill_formset'] = SkillFormSet(prefix='skill')
+
+        return data
+
     def form_valid(self, form):
-        messages.success(self.request, "The Profile was updated successfully.")
-        return super(EmployeeProfileUpdateView, self).form_valid(form)
+        education_formset = EducationFormSet(self.request.POST, prefix='education',
+                                             queryset=Education.objects.filter(user=self.request.user))
+        experience_formset = ExperienceFormSet(self.request.POST, prefix='experience',
+                                               queryset=Experience.objects.filter(user=self.request.user))
+        skill_formset = SkillFormSet(self.request.POST, prefix='skill',
+                                     queryset=Skill.objects.filter(user=self.request.user))
+        if education_formset.is_valid() and experience_formset.is_valid() and skill_formset.is_valid():
+            form.instance.user = self.request.user
+            self.object = form.save()
+
+            education_instances = education_formset.save(commit=False)
+            for instance in education_instances:
+                instance.user = self.request.user
+                instance.save()
+            experience_instances = experience_formset.save(commit=False)
+            for instance in experience_instances:
+                instance.user = self.request.user
+                instance.save()
+            skill_instances = skill_formset.save(commit=False)
+            for instance in skill_instances:
+                instance.user = self.request.user
+                instance.save()
+            messages.success(self.request, "Your Profile was updated successfully.")
+            return redirect(self.get_success_url())
+        else:
+            return self.form_invalid(form)
 
 
 class EmployeeProfileDeleteView(DeleteView):
     model = EmployeeProfile
     template_name = 'Accounts/employee/view_profile.html'
-    success_url = reverse_lazy('homepage')
+    success_url = reverse_lazy('Homepage')
 
     def get_object(self, queryset=None):
         return self.request.user.employeeprofile
+    
+    def delete(self, request, *args, **kwargs):
+        employee_profile = self.get_object()
+        employee_profile.educations.all().delete()
+        employee_profile.experiences.all().delete()
+        employee_profile.skills.all().delete()
+        
+        return super().delete(request, *args, **kwargs)
+        
 
 
 class EducationCreateView(CreateView):
@@ -208,44 +262,6 @@ class SkillCreateView(CreateView):
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
 
 
-# class ExperienceUpdateView(UpdateView):
-#     model = Experience
-#     form_class = ExperienceForm
-#
-#     template_name = 'Accounts/employee/edit-experience.html'
-#     success_url = reverse_lazy('employee-profile-view')
-#
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.request.POST:
-#             data['formset'] = ExperienceFormSet(self.request.POST, instance=self.object)
-#         else:
-#             data['formset'] = ExperienceFormSet(instance=self.object)
-#         return data
-#
-#     def get_object(self, queryset=None):
-#         obj, created = Experience.objects.get_or_create(id=self.kwargs['exp_id'])
-#         return obj
-#
-#     def get_context_object_name(self, obj):
-#         obj['formset'] = 'formset'
-#         return obj
-#
-#     def form_valid(self, form):
-#         formset = ExperienceFormSet(self.request.POST, instance=self.object)
-#         if formset.is_valid():
-#             form.instance.user = self.request.user
-#             self.object = form.save()
-#             instances = formset.save(commit=False)
-#             for instance in instances:
-#                 instance.user = self.request.user
-#                 instance.save()
-#                 messages.success(self.request, "The Profile was updated successfully.")
-#                 return redirect(self.get_success_url())
-#         else:
-#             return super().form_invalid(form)
-
-
 class JobDetailView(DetailView):
     model = Job
     template_name = 'Accounts/employee/detail.html'
@@ -282,46 +298,61 @@ class ApplyJobView(CreateView):
         else:
             return HttpResponseRedirect(reverse_lazy('Homepage'))
 
-
-
     def form_valid(self, form):
         applicants = Applicants.objects.filter(applicant=self.request.user.id, job_id=self.kwargs['job_id'])
         if applicants:
             messages.info(self.request, 'You have already applied for this Job')
             return HttpResponseRedirect(reverse_lazy('Homepage'))
-        form.instance.applicant = self.request.user
-        form.save()
+        applicant = form.save(commit=False)
+        applicant.applicant = self.request.user
+        applicant.save()
+        resume = GenerateResumeView(self.request.user)
+        applicant.resume.save('resume.pdf', resume, save=True)
+
         return self.form_valid(form)
 
 
 class GenerateResumeView(View):
     def get(self, request):
-        user=self.request.user
+        user = self.request.user
         employee_profile = EmployeeProfile.objects.get(user=user)
         educations = Education.objects.filter(user=user)
         experiences = Experience.objects.filter(user=user)
         skills = Skill.objects.filter(user=user)
 
-        template = get_template('Accounts/employee/view.html')
+        template = get_template('Accounts/employee/resume.html')
         context = {
             'employee_profile': employee_profile,
             'educations': educations,
             'experiences': experiences,
-            'skills':skills
+            'skills': skills
 
         }
         rendered_template = template.render(context)
+        return render(request, 'Accounts/employee/resume_preview.html', {'rendered_template': rendered_template})
+
+
+class DownloadResumeView(View):
+    def get(self, request):
+        user = self.request.user
+        employee_profile = EmployeeProfile.objects.get(user=user)
+        educations = Education.objects.filter(user=user)
+        experiences = Experience.objects.filter(user=user)
+        skills = Skill.objects.filter(user=user)
+
+        template = get_template('Accounts/employee/resume.html')
+        context = {
+            'employee_profile': employee_profile,
+            'educations': educations,
+            'experiences': experiences,
+            'skills': skills
+
+        }
+        rendered_template = template.render(context)
+        pdf_file = BytesIO()
+        pisa.CreatePDF(BytesIO(rendered_template.encode('utf-8')), pdf_file)
+
         response = HttpResponse(content_type='application/pdf')
         response['content-Disposition'] = 'attachment; filename="resume.pdf"'
-
-        from xhtml2pdf import pisa
-        pisaStatus = pisa.CreatePDF(rendered_template, dest=response)
-        if pisaStatus.err:
-            return HttpResponse('An Error ouccured While Generating the resume')
+        response.write(pdf_file.getvalue())
         return response
-
-
-
-
-
-

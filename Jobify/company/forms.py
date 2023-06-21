@@ -96,6 +96,7 @@ class CreateJobForm(forms.ModelForm):
 
 
 class ApplyJobForm(forms.ModelForm):
+    resume = forms.FileField(label='Resume')
     class Meta:
         model = Applicants
-        fields = ('job',)
+        fields = ('job','resume')

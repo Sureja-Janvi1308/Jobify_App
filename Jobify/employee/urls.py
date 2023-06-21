@@ -12,10 +12,10 @@ urlpatterns = [
     path('employee/educationdetails/', EducationCreateView.as_view(), name='employee-edu-profile'),
     path('employee/experiencedetails/', ExperienceCreateView.as_view(), name='employee-exp-profile'),
     path('employee/skillsdetails/', SkillCreateView.as_view(), name='employee-skill-profile'),
-    # path('employee/updateexperience/', ExperienceUpdateView.as_view(), name='edit-experience'),
     path('jobdetails/<int:job_id>/', JobDetailView.as_view(), name='job-detail'),
     path('applyjob/<int:job_id>/', ApplyJobView.as_view(), name='apply-job'),
-    path('downloadresume/', GenerateResumeView.as_view(), name='resume-builder')
+    path('resumepreview/', GenerateResumeView.as_view(), name='resume-preview'),
+    path('resumedownload/', DownloadResumeView.as_view(), name='resume-download'),
 
 
 
