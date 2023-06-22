@@ -6,36 +6,9 @@
 <form method="post" enctype="multipart/form-data">
      <div class=" mt-5 col-lg-6 offset-3 text-uppercase ">
         <div class="box border border-dark">
-            <h3 class="heading"> Profile Information </h3>
+            <h3 class="heading"> Personal Information </h3>
 {% csrf_token %}
 {{ form|crispy }}
-              <h3 class="heading"> Education Information </h3>
-            {{ education_formset.management_form }}
-             <div id="edu-form-list" >
-            {% for form in education_formset %}
-                  <div class="edu-form" >
-            {{ form|crispy }}
-                       <button type="button" class="delete-form" > Delete </button>
-    </div>
-            {% endfor %}
-             </div><br/>
-             <div id="empty-form" class="hidden d-none" >{{ education_formset.empty_form|crispy }}</div>
-            <div class="col-lg-10 text-right mb-5">
-                  <button type="button" class="btn btn-outline-white-primary " id="add-more"><i class="fa fa-plus"></i>Add More</button>
-
-            </div>
-
-              <h3 class="heading"> Experience Information </h3>
-            {{ experience_formset.management_form }}
-            {% for form in experience_formset %}
-            {{ form|crispy }}
-            {% endfor %}
-
-              <h3 class="heading"> Skills Information </h3>
-            {{ skill_formset.management_form }}
-            {% for form in skill_formset %}
-            {{ form|crispy }}
-            {% endfor %}
 
 <div class="text-center">
                     <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Update
@@ -45,48 +18,5 @@
      </div>
 
 </form>
-<script>
-       document.addEventListener('click', (event)=>{
-        if (event.target.id == 'add-more') {
-            add_new_form(event)
-        }
-        else if (event.target.classList.contains('delete-form')){
-        deleteForm(event);
-        }
-    })
-    function add_new_form(event) {
-        if (event) {
-            event.preventDefault()
-        }
-        const totalNewForms = document.getElementById('id_form-TOTAL_FORMS')
-        const currentEduForms = document.getElementsByClassName('edu-form')
-        const currentFormCount = currentEduForms.length // + 1
-        const formCopyTarget = document.getElementById('edu-form-list')
-        const copyEmptyFormEl = document.getElementById('empty-form').cloneNode(true)
-        copyEmptyFormEl.setAttribute('class', 'edu-form')
-        copyEmptyFormEl.setAttribute('id', `form-${currentFormCount}`)
-        const regex = new RegExp('__prefix__', 'g')
-        copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
-        totalNewForms.setAttribute('value', currentFormCount + 1)
-
-        const deleteButton = document.createElement('button');
-        deleteButton.setAttribute('type', 'button');
-        deleteButton.setAttribute('class', 'delete-form');
-        deleteButton.textContent = 'Delete';
-        copyEmptyFormEl.appendChild(deleteButton);
-
-        formCopyTarget.append(copyEmptyFormEl);
-        }
-
-        function deleteForm(event) {
-        const formToDelete = event.target.parentNode;
-        formToDelete.remove();
-
-    }
-
-
-
-
-
 </script>
 {% endblock %}

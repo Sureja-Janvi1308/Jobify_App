@@ -31,13 +31,13 @@ class EmployeeProfileForm(forms.ModelForm):
 
     def clean_first_name(self):
         first_name = self.cleaned_data['first_name']
-        if not first_name.is_alpha():
+        if not first_name.isalpha():
             raise forms.ValidationError('First name should consist of only letters')
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data['last_name']
-        if not last_name.is_alpha():
+        if not last_name.isalpha():
             raise forms.ValidationError('Last name should consist of only letters')
         return last_name
 
@@ -47,6 +47,12 @@ class EmployeeProfileForm(forms.ModelForm):
         if address_2 and address_1 and address_1.lower() and address_2.lower():
             raise forms.ValidationError('Address1 and Address2 should not be the same')
         return address_2
+
+    def clean_pincode(self):
+        pincode  =self.cleaned_data['pincode']
+        if not pincode.isdigit():
+            raise forms.ValidationError('Zipcode should not consist of any letters ')
+        return pincode
 
 
 

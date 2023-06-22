@@ -36,13 +36,13 @@
                                          class="img-fluid rounded-circle">
                                 </div>
                             </div>
-                            {% if applicant.resume %}
+
                             <div class="resume">
-                                <a href="{{ applicant.resume.url }}" target="_blank" class="btn btn-outline-primary btn-sm">
+                                <a href="{% url 'resume-preview' %}" target="_blank" class="btn btn-outline-primary btn-sm">
                                     <i class="fa-fa-file"></i> View resume
                                 </a>
                             </div>
-                            {% endif %}
+
 
 
                             </div>

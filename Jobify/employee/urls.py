@@ -10,6 +10,7 @@ urlpatterns = [
     path('employee/profiledelete/', EmployeeProfileDeleteView.as_view(), name='employee-profile-delete'),
     path('employee/jobsearch/', SearchView.as_view(), name='search-job'),
     path('employee/educationdetails/', EducationCreateView.as_view(), name='employee-edu-profile'),
+    path('employee/educationupdate/', EducationUpdateView.as_view(), name='employee-edu-update'),
     path('employee/experiencedetails/', ExperienceCreateView.as_view(), name='employee-exp-profile'),
     path('employee/skillsdetails/', SkillCreateView.as_view(), name='employee-skill-profile'),
     path('jobdetails/<int:job_id>/', JobDetailView.as_view(), name='job-detail'),

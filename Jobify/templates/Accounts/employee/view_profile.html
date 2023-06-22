@@ -39,9 +39,17 @@
                     <div class="col-md-6"><label class="labels">State/Region</label><input type="text" class="form-control" value="" placeholder="state"></div>
                 </div>
 
-                 <div class="text-center mt-4 mb-3">
-                    <a href="{% url 'employee-profile-update' %}" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Update Profile
+                 <div class="text-center mt-4 mb-4">
+                      <div class="nav-item dropdown">
+                     <a id="pages" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" href="" class="nav-link dropdown-toggle btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Update Profile
                     </a>
+                      <div aria-labelledby="pages" class="dropdown-menu">
+                                <a href="{% url 'employee-profile-update' %}" class="text-capitalize btn btn-light dropdown-item">Personal Information</a>
+                                <a href="{% url 'employee-edu-update' %}" class="text-capitalize btn btn-light dropdown-item">Experience Profile</a>
+                          <a href="{% url 'employer-register' %}" class="fw-light text-capitalize btn btn-light dropdown-item">Education Profile</a>
+                          <a href="{% url 'employer-register' %}" class="text-capitalize btn btn-light dropdown-item">Skill Profile</a>
+                            </div>
+                      </div>
                 </div>
              <div class="text-center">
                     <a href="" class="btn btn-outline-white-primary" data-toggle="modal" data-target="#deleteModal"><i class="fa fa-user-md"></i> Delete Profile
