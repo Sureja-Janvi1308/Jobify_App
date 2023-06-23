@@ -10,6 +10,7 @@
         <div class="box border border-dark">
             <h3 class="heading">Education Profile</h3>
     {% csrf_token %}
+    {{ form|crispy }} <hr> <br>
 
     {{ formset.management_form }}
 

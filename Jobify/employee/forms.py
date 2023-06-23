@@ -4,6 +4,7 @@ from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Submit, Layout, Field, ButtonHolder
 from crispy_forms.bootstrap import FormActions
 from django import forms
+from django.forms import modelformset_factory
 
 from .models import EmployeeProfile, Education, Experience, Skill
 
@@ -49,12 +50,10 @@ class EmployeeProfileForm(forms.ModelForm):
         return address_2
 
     def clean_pincode(self):
-        pincode  =self.cleaned_data['pincode']
+        pincode = self.cleaned_data['pincode']
         if not pincode.isdigit():
             raise forms.ValidationError('Zipcode should not consist of any letters ')
         return pincode
-
-
 
     def set_initial_user_data(self, user):
         self.fields['first_name'].initial = user.first_name
@@ -87,10 +86,13 @@ class EducationForm(forms.ModelForm):
         return helper
 
 
+EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
+
+
 class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
-        exclude = ['user']
+        exclude = ['user','user_id']
         fields = ['company_name', 'job_title', 'start_date', 'end_date', 'description']
 
         def __init__(self, *args, **kwargs):
@@ -98,6 +100,9 @@ class ExperienceForm(forms.ModelForm):
             self.helper = FormHelper()
             self.helper.form_method = 'post'
             self.helper.add_input(Submit('submit', 'Save'))
+
+
+ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
 
 
 class SkillForm(forms.ModelForm):

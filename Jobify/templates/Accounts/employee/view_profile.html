@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load crispy_forms_tags %}
 {% block title %}
     View Employee Profile
 {% endblock %}
@@ -70,7 +71,10 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <form method="post" action="{% url 'employee-profile-delete' %}">
               {% csrf_token %}
-
+              {{ employeeprofileform|crispy }}
+              {{ educationform|crispy }}
+              {{ exprienceform|crispy }}
+                {{ skillform|crispy }}
               <button type="submit" class="btn btn-danger">Delete </button>
           </form>
 
