@@ -71,10 +71,7 @@
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
           <form method="post" action="{% url 'employee-profile-delete' %}">
               {% csrf_token %}
-              {{ employeeprofileform|crispy }}
-              {{ educationform|crispy }}
-              {{ exprienceform|crispy }}
-                {{ skillform|crispy }}
+
               <button type="submit" class="btn btn-danger">Delete </button>
           </form>
 
@@ -90,13 +87,122 @@
             <div class="p-3 py-5">
 
 
-                <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience"><i class="fa fa-plus"></i>&nbsp;Experience</span></div><br>
+                <div class="d-flex justify-content-between align-items-center experience"><span>Edit Experience</span><span class="border px-3 p-1 add-experience">  <div class="text-center">
+                    <a href="" class="btn btn-outline-white-primary" data-toggle="modal" data-target="#deleteModal1"><i class="fa fa-user-md"></i> Delete Profile
+                    </a>
+                 <div class="modal" id="deleteModal1" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" role="document">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel1">Confirm delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete this experience Profile?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="post" action="{% url 'employee-exp-delete' %}">
+              {% csrf_token %}
+
+              <button type="submit" class="btn btn-danger">Delete </button>
+          </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+                </div></span></div><br>
                    {% for exp in experiences %}
-                <div class="col-md-12"><label class="labels">Experience in Designing</label><input type="text" class="form-control" placeholder="{{ experience.company_name }}" value=""></div> <br>
-                <div class="col-md-12"><label class="labels">Additional Details</label><input type="text" class="form-control" placeholder="additional details" value=""></div>
+                <div class="col-md-12"><label class="labels"> Company Name </label><input type="text" class="form-control" placeholder="{{ exp.company_name }}" value=""></div> <br>
+                <div class="col-md-12"><label class="labels"> Job Title </label><input type="text" class="form-control" placeholder="{{ exp.job_title }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> Description  </label><input type="text" class="form-control" placeholder="{{ exp.description }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> Start Date </label><input type="text" class="form-control" placeholder="{{ exp.start_date }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> End Date </label><input type="text" class="form-control" placeholder="{{ exp.end_date }}" value=""></div>
             {% endfor %}
             </div>
+             <div class="p-3 py-5">
+
+
+                <div class="d-flex justify-content-between align-items-center experience"><span>Education Details </span><span class="border px-3 p-1 add-experience"><div class="text-center">
+                    <a href="" class="btn btn-outline-white-primary" data-toggle="modal" data-target="#deleteModal2"><i class="fa fa-user-md"></i> Delete Profile
+                    </a>
+                 <div class="modal" id="deleteModal2" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" role="document">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel2">Confirm delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete Your Education Profile?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="post" action="{% url 'employee-edu-delete' %}">
+              {% csrf_token %}
+
+              <button type="submit" class="btn btn-danger">Delete </button>
+          </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+                </div></span></div><br>
+                   {% for edu in educations %}
+                <div class="col-md-12"><label class="labels"> Institution Name  </label><input type="text" class="form-control" placeholder="{{ edu.institution_name }}" value=""></div> <br>
+                <div class="col-md-12"><label class="labels"> Degree  </label><input type="text" class="form-control" placeholder="{{ edu.degree }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> Field Of Study  </label><input type="text" class="form-control" placeholder="{{ edu.field_of_study }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> Start Date </label><input type="text" class="form-control" placeholder="{{ edu.start_date }}" value=""></div>
+                <div class="col-md-12"><label class="labels"> End Date </label><input type="text" class="form-control" placeholder="{{ edu.end_date }}" value=""></div>
+            {% endfor %}
+            </div>
+
         </div>
+
+         <div class="col-md-4">
+            <div class="p-3 py-5">
+
+
+                <div class="d-flex justify-content-between align-items-center experience"><span> Skills </span><span class="border px-3 p-1 add-experience">&nbsp; <div class="text-center">
+                    <a href="" class="btn btn-outline-white-primary" data-toggle="modal" data-target="#deleteModal3"><i class="fa fa-user-md"></i> Delete Profile
+                    </a>
+                 <div class="modal" id="deleteModal3" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel3" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" role="document">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteModalLabel3">Confirm delete</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete Skill Profile?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <form method="post" action="{% url 'employee-skill-delete' %}">
+              {% csrf_token %}
+
+              <button type="submit" class="btn btn-danger">Delete </button>
+          </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+                </div></span></div><br>
+                   {% for sk in skills %}
+                <div class="col-md-12"><label class="labels">  Name </label><input type="text" class="form-control" placeholder="{{ sk.name }}" value=""></div> <br>
+                <div class="col-md-12"><label class="labels"> Years Of Experience  </label><input type="text" class="form-control" placeholder="{{ sk.years_of_experience }}" value=""></div>
+
+            {% endfor %}
+            </div>
     </div>
 </div>
 </div>

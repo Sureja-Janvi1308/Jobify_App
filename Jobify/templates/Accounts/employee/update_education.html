@@ -10,14 +10,14 @@
         <div class="box border border-dark">
             <h3 class="heading">Education Profile</h3>
     {% csrf_token %}
-    {{ form|crispy }} <hr> <br>
+
 
     {{ formset.management_form }}
 
-    <div id="edu-form-list" >
+    <div id="edu-form-list">
     {% for form in formset %}
 
-    <div class="edu-form" >
+    <div class="edu-form">
         {{ form|crispy }}
         <button type="button" class="delete-form" > Delete </button>
     </div>

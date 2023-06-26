@@ -13,11 +13,13 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
+from django.views.generic.edit import UpdateView
 from django.forms import modelformset_factory
 from authentication.models import CustomUser
 from company.forms import ApplyJobForm
 from company.models import Job, EmployerProfile, Applicants
-from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, ExperienceFormSet
+from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, ExperienceFormSet, \
+    EducationFormSet
 from employee.models import EmployeeProfile, Education, Experience, Skill
 
 
@@ -86,6 +88,12 @@ class EmployeeProfileView(TemplateView):
         context = super().get_context_data(**kwargs)
         employee_profile = EmployeeProfile.objects.get(user=self.request.user)
         context['employee_profile'] = employee_profile
+        educations = Education.objects.filter(user=self.request.user)
+        context['educations'] = educations
+        experiences = Experience.objects.filter(user=self.request.user)
+        context['experiences'] = experiences
+        skills = Skill.objects.filter(user=self.request.user)
+        context['skills'] = skills
 
         return context
 
@@ -106,54 +114,17 @@ class EmployeeProfileUpdateView(UpdateView):
         return super(EmployeeProfileUpdateView, self).form_valid(form)
 
 
-class EmployeeProfileDeleteView(FormView):
+class EmployeeProfileDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
+    success_message = 'Profile Deleted Successfully'
 
-    def get(self, request, *args, **kwargs):
-        self.employeeprofileform = EmployeeProfileForm(prefix='employeeprofile')
-        self.educationform = EducationForm(prefix='educations')
-        self.experienceform = ExperienceForm(prefix='experiences')
-        self.skillform = SkillForm(prefix='skills')
-        return super().get(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.employeeprofileform = EmployeeProfileForm(request.POST, prefix='employeeprofile')
-        self.educationform = EducationForm(request.POST, prefix='educations')
-        self.experienceform = ExperienceForm(request.POST, prefix='experiences')
-        self.skillform = SkillForm(request.POST, prefix='skills')
-        if self.employeeprofileform.is_valid() and self.educationform.is_valid() and self.experienceform.is_valid() and self.skillform:
-            return self.form_valid(self.get_form())
-        else:
-            return self.form_invalid(form=self.get_form())
-
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
+    def get_object(self, queryset=None):
+        return self.request.user.employeeprofile
 
     def form_valid(self, form):
-        user = self.request.user
+        return super().form_valid(form)
 
-        if self.employeeprofileform.is_valid():
-            EmployeeProfile.objects.filter(user=user).delete()
-
-        if self.educationform.is_valid():
-            Education.objects.filter(user=user).delete()
-
-        if self.experienceform.is_valid():
-            Experience.objects.filter(user=user).delete()
-
-        if self.skillform.is_valid():
-            Skill.objects.filter(user=user).delete()
-
-        return HttpResponseRedirect(self.get_success_url())
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['employee_profile'] = self.employeeprofileform
-        context['educationform'] = self.educationform
-        context['experienceform'] = self.experienceform
-        context['skillform'] = self.skillform
-        return context
 
 class EducationCreateView(CreateView):
     model = Education
@@ -189,6 +160,51 @@ class EducationCreateView(CreateView):
             return super().form_invalid(form)
 
 
+# class EducationUpdateView(UpdateView):
+#     model = Education
+#     fields = ['degree']
+#
+#     template_name = 'Accounts/employee/update_education.html'
+#     success_url = reverse_lazy('employee-profile-view')
+#
+#
+#
+#     def get_object(self, queryset=None):
+#         return self.request.user
+#
+#
+#     def get_context_data(self, **kwargs):
+#         data = super().get_context_data(**kwargs)
+#         if self.request.POST:
+#
+#             data['formset'] = EducationFormSet(self.request.POST)
+#         else:
+#             data['formset'] = EducationFormSet()
+#         return data
+#
+#
+#
+#     def form_valid(self, form):
+#         print('fndjsnujn')
+#         context = self.get_context_data()
+#         formset = context['formset']
+#
+#         if formset.is_valid():
+#             formset.save()
+#             messages.success(self.request, "Your Profile was updated successfully.")
+#             return super().form_valid(form)
+#         else:
+#             for form_errors in formset.errors:
+#                 for field_errors in form_errors:
+#                     for error in field_errors:
+#                         print(f'Formset errors :{error}')
+#             return self.form_invalid(form)
+#
+#     def form_invalid(self, form):
+#         print(form.errors)
+#         return form
+
+
 class EducationUpdateView(UpdateView):
     model = Education
     form_class = EducationForm
@@ -204,30 +220,41 @@ class EducationUpdateView(UpdateView):
         if self.request.POST:
             data['formset'] = EducationFormSet(self.request.POST)
         else:
-            data['formset'] = EducationFormSet(queryset=Education.none())
+            data['formset'] = EducationFormSet()
         return data
 
     def form_valid(self, form):
+
         formset = EducationFormSet(self.request.POST, queryset=Education.objects.filter(user=self.request.user))
         if formset.is_valid():
-            if formset.is_valid():
-                form.instance.user = self.request.user
-                self.object = form.save()
-                instances = formset.save(commit=False)
-                for instance in instances:
-                    instance.user = self.request.user
-                    instance.save()
-                messages.success(self.request, "Your Profile was updated successfully.")
 
-                for deleted_form in formset.deleted_forms:
-                    deleted_form.instance.delete()
-                return super().form_valid(form)
+            form.instance.user = self.request.user
+            self.object = form.save()
+            instances = formset.save(commit=False)
+            for instance in instances:
+                instance.user = self.request.user
+                instance.save()
+            messages.success(self.request, "Your Profile was updated successfully.")
 
-        else:
-            return super().form_invalid(form)
+    def form_invalid(self, form):
+        print(form)
+        return form
 
 
-EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
+#
+
+
+class EducationDeleteView(DeleteView):
+    template_name = 'Accounts/employee/view_profile.html'
+    success_url = reverse_lazy('Homepage')
+
+    def get_object(self, queryset=None):
+        return self.request.user.educations.all().first()
+
+    def form_valid(self, form):
+        formset = modelformset_factory(Education, form=EducationForm)
+        messages.success(self.request, f'Profile Deleted Successfully')
+        return super(EducationDeleteView, self).form_valid(form)
 
 
 class ExperienceCreateView(CreateView):
@@ -235,6 +262,7 @@ class ExperienceCreateView(CreateView):
     form_class = ExperienceForm
     template_name = 'Accounts/employee/create-experience.html'
     success_url = reverse_lazy('employee-skill-profile')
+    success_message = 'Experience Profile Created Successfully'
 
     def get_context_data(self, **kwargs):
 
@@ -262,6 +290,19 @@ class ExperienceCreateView(CreateView):
             return super(ExperienceCreateView, self).form_valid(form)
         else:
             return super().form_invalid(form)
+
+
+class ExperienceDeleteView(DeleteView):
+    template_name = 'Accounts/employee/view_profile.html'
+    success_url = reverse_lazy('Homepage')
+
+    def get_object(self, queryset=None):
+        return self.request.user.experiences.all().first()
+
+    def form_valid(self, form):
+        formset = modelformset_factory(Experience, form=ExperienceForm)
+        messages.success(self.request, f'Profile Deleted Successfully')
+        return super(ExperienceDeleteView, self).form_valid(form)
 
 
 class SkillCreateView(CreateView):
@@ -294,6 +335,19 @@ class SkillCreateView(CreateView):
 
 
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+
+
+class SkillDeleteView(DeleteView):
+    template_name = 'Accounts/employee/view_profile.html'
+    success_url = reverse_lazy('Homepage')
+
+    def get_object(self, queryset=None):
+        return self.request.user.skills.all().first()
+
+    def form_valid(self, form):
+        formset = modelformset_factory(Skill, form=SkillForm)
+        messages.success(self.request, f'Profile Deleted Successfully')
+        return super(SkillDeleteView, self).form_valid(form)
 
 
 class JobDetailView(DetailView):
@@ -340,7 +394,6 @@ class ApplyJobView(CreateView):
         applicant = form.save(commit=False)
         applicant.applicant = self.request.user
         applicant.save()
-
 
         return self.form_valid(form)
 
