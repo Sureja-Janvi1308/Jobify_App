@@ -8,7 +8,7 @@
 <form class="form-horizontal" method="POST" action="" >
        <div class=" mt-5 col-lg-6 offset-3 text-uppercase text-bold ">
         <div class="box border border-dark">
-            <h3 class="heading">Education Profile</h3>
+            <h3 class="heading">Experience Profile</h3>
     {% csrf_token %}
 
 
@@ -19,7 +19,7 @@
 
     <div class="edu-form">
         {{ form|crispy }}
-        <button type="button" class="delete-form" name="DELETE"> Delete </button>
+        <button type="button" class="delete-form" > Delete </button>
     </div>
     {% endfor %}
         </div><br/>
@@ -74,30 +74,6 @@
         function deleteForm(event) {
         const formToDelete = event.target.parentNode;
         formToDelete.remove();
-        const currentEduForms = document.getElementByClassName('edu-form');
-        const totalNewForms = document.getElementById('id_form-TOTAL_FORMS');
-        totalNewForms.setAttribute('value', currentEduForms.length);
-
-        for(let i=0; i < currentEduForms.length; i++){
-        const form = currentEduForms[i];
-        const prefix = 'form-${i}-';
-        updateFormFields(form, prefix);
-        }
-
-        function updateFormFields(form, prefix){
-            const formFields = form.getElementByTagName('input')
-            for(let i=0; i < formFields.length; i++)
-            {
-            const field = formFields[i];
-            const fieldName = fieldName.getAttribute('name');
-            const updatedName = fieldName.replace(/form-\d+-/g, prefix);
-            field.setAttribute('id', updatedName);
-            field.setAttribute('name', updatedName);
-            }
-
-
-
-        }
 
     }
 

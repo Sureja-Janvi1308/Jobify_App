@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -160,6 +161,30 @@ class ApplicantsListView(ListView):
         return self.model.objects.filter(job__user_id=self.request.user.id)
 
 
-# class JobDetailView(DetailView):
-#     model = Job
-#     template_name =
+class JobListView(ListView):
+    model = Job
+    template_name = 'jobs/jobs.html'
+    context_object_name = 'jobs'
+    paginate_by = 5
+
+
+class JobDetailsView(DetailView):
+    model = Job
+    template_name = 'jobs/details.html'
+    context_object_name = 'job'
+    pk_url_kwarg = 'id'
+
+    def get_object(self, queryset=None):
+        obj = super(JobDetailsView, self).get_object(queryset=queryset)
+        if obj is None:
+            raise Http404("Job doesn't exists")
+        return obj
+
+    def get(self, request, *args, **kwargs):
+        try:
+            self.object = self.get_object()
+        except Http404:
+            # redirect here
+            raise Http404("Job doesn't exists")
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)

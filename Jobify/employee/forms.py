@@ -5,6 +5,7 @@ from crispy_forms.layout import Submit, Layout, Field, ButtonHolder
 from crispy_forms.bootstrap import FormActions
 from django import forms
 from django.forms import modelformset_factory
+from django.utils import timezone
 
 from .models import EmployeeProfile, Education, Experience, Skill
 
@@ -71,6 +72,35 @@ class EducationForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.helper = self._set_form_helper()
 
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get('start_date')
+        end_date = cleaned_data.get('end_date')
+        if start_date and end_date and start_date == end_date:
+            raise forms.ValidationError('Start date and End date cannot be same')
+
+        current_year = timezone.now().year
+        if start_date and start_date.year >= current_year:
+            raise forms.ValidationError('Start Date should be previous year of the Current Year')
+
+        if end_date and (end_date.year >= current_year or end_date.year <= start_date.year):
+            raise forms.ValidationError('End Date should be year between start year and Current Year ')
+
+    def validate_institution_name(value):
+        if any(char.isdigit() for char in value):
+            raise forms.ValidationError('Institution Name cannot contain digits')
+
+        if not any(char in '@/' for char in value):
+            raise forms.ValidationError("Institution Name Should contain '@' or '/'")
+
+    def validate_degree(value):
+        if any(char.isdigit() or not char.isalnum() for char in value):
+            raise forms.ValidationError('Degree should NOT contain Special Characters or Numbers')
+
+    def validate_field_of_study(value):
+        if any(char.isdigit() or not char.isalnum() for char in value):
+            raise forms.ValidationError('Degree should NOT contain Special Characters or Numbers')
+
     def _set_form_helper(self):
         helper = FormHelper()
         helper.form_tag = False
@@ -92,7 +122,7 @@ EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
 class ExperienceForm(forms.ModelForm):
     class Meta:
         model = Experience
-        exclude = ['user','user_id']
+        exclude = ['user', 'user_id']
         fields = ['company_name', 'job_title', 'start_date', 'end_date', 'description']
 
         def __init__(self, *args, **kwargs):
@@ -100,6 +130,20 @@ class ExperienceForm(forms.ModelForm):
             self.helper = FormHelper()
             self.helper.form_method = 'post'
             self.helper.add_input(Submit('submit', 'Save'))
+
+        def clean(self):
+            cleaned_data = super().clean()
+            start_date = cleaned_data.get('start_date')
+            end_date = cleaned_data.get('end_date')
+            if start_date and end_date and start_date == end_date:
+                raise forms.ValidationError('Start date and End date cannot be same')
+
+            current_year = timezone.now().year
+            if start_date and start_date.year >= current_year:
+                raise forms.ValidationError('Start Date should be previous year of the Current Year')
+
+            if end_date and (end_date.year >= current_year or end_date.year <= start_date.year):
+                raise forms.ValidationError('End Date should be year between start year and Current Year ')
 
 
 ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
@@ -116,3 +160,15 @@ class SkillForm(forms.ModelForm):
             self.helper = FormHelper()
             self.helper.form_method = 'post'
             self.helper.add_input(Submit('submit', 'Save'))
+
+        def clean_name(self):
+            name = self.cleaned_data['name']
+            if not name.isalpha():
+                raise forms.ValidationError('First name should consist of only letters')
+            return name
+
+        def clean_years_of_experience(self):
+            years_of_experience = self.cleaned_data['years_of_experience']
+            if not years_of_experience.isalnum():
+                raise forms.ValidationError('Experience Should be in Numbers Only ')
+

@@ -116,10 +116,10 @@
 
                                 <div class="col-10">
                                     <h4 class="job__title">
-                                        <a href="">{{ trending.title }}</a>
+                                        <a href="{% url 'job-detail' trending.id %}">{{ trending.title }}</a>
                                     </h4>
-                                    <p class="job__company">
-                                        {{ trending.user.employerprofile.company_name }}
+                                    <p class="job__company text-capitalize fs-3">
+                                     Company Name -  {{ trending.user.employerprofile.company_name }}
                                     </p>
                                 </div>
                             </div>

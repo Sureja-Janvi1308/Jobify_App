@@ -41,7 +41,7 @@ class EmployerProfileForm(forms.ModelForm):
 
     def clean_company_name(self):
         company_name = self.cleaned_data['company_name']
-        if re.search(r'\d', company_name) or re.search(r'\W', company_name):
+        if re.search(r'\d', company_name) or re.search(r'\W', company_name) :
             raise forms.ValidationError('Company name should not contain any number or special characters')
         return company_name
 
@@ -52,11 +52,11 @@ class EmployerProfileForm(forms.ModelForm):
             raise forms.ValidationError('Address 1 and Address 2 should not be the same ')
         return address_2
 
-    def clean_website(self):
-        website = self.cleaned_data['website']
-        if not re.search(r'^https?://\w+\./w+$', website):
-            raise forms.ValidationError('Invalid Website URL')
-        return website
+    # def clean_website(self):
+    #     website = self.cleaned_data['website']
+    #     if not re.search(r'^https?://\w+\./w+$', website):
+    #         raise forms.ValidationError('Invalid Website URL')
+    #     return website
 
     def set_initial_user_data(self, user):
         self.fields['first_name'].initial = user.first_name
@@ -78,21 +78,12 @@ class CreateJobForm(forms.ModelForm):
 
     def clean_title(self):
         title = self.cleaned_data['title']
-        if title.is_alnum():
+        if title.isalnum():
             raise forms.ValidationError('title should not contain any special characters')
         return title
 
-    def clean_salary(self):
-        salary = self.cleaned_data['salary']
-        if not salary.is_numeric():
-            raise forms.ValidationError('salary should be written in numbers only')
-        return salary
 
-    def clean_position(self):
-        position = self.cleaned_data['position']
-        if not position.is_numeric():
-            raise forms.ValidationError('No of position required should be in numbers only')
-        return position
+
 
 
 class ApplyJobForm(forms.ModelForm):

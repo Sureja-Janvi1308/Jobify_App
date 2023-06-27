@@ -160,88 +160,28 @@ class EducationCreateView(CreateView):
             return super().form_invalid(form)
 
 
-# class EducationUpdateView(UpdateView):
-#     model = Education
-#     fields = ['degree']
-#
-#     template_name = 'Accounts/employee/update_education.html'
-#     success_url = reverse_lazy('employee-profile-view')
-#
-#
-#
-#     def get_object(self, queryset=None):
-#         return self.request.user
-#
-#
-#     def get_context_data(self, **kwargs):
-#         data = super().get_context_data(**kwargs)
-#         if self.request.POST:
-#
-#             data['formset'] = EducationFormSet(self.request.POST)
-#         else:
-#             data['formset'] = EducationFormSet()
-#         return data
-#
-#
-#
-#     def form_valid(self, form):
-#         print('fndjsnujn')
-#         context = self.get_context_data()
-#         formset = context['formset']
-#
-#         if formset.is_valid():
-#             formset.save()
-#             messages.success(self.request, "Your Profile was updated successfully.")
-#             return super().form_valid(form)
-#         else:
-#             for form_errors in formset.errors:
-#                 for field_errors in form_errors:
-#                     for error in field_errors:
-#                         print(f'Formset errors :{error}')
-#             return self.form_invalid(form)
-#
-#     def form_invalid(self, form):
-#         print(form.errors)
-#         return form
+class EducationUpdateView(View):
 
-
-class EducationUpdateView(UpdateView):
-    model = Education
-    form_class = EducationForm
-
-    template_name = 'Accounts/employee/update_education.html'
-    success_url = reverse_lazy('employee-profile-view')
-
-    def get_object(self, queryset=None):
-        return self.request.user
-
-    def get_context_data(self, **kwargs):
-        data = super().get_context_data(**kwargs)
-        if self.request.POST:
-            data['formset'] = EducationFormSet(self.request.POST)
+    def get(self, request):
+        education = Education.objects.filter(user=self.request.user)
+        if len(education) > 0:
+            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
         else:
-            data['formset'] = EducationFormSet()
-        return data
+            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=1)
+        context = {'formset': EducationFormSet}
+        return render(request, 'Accounts/employee/update_education.html', context)
 
-    def form_valid(self, form):
-
-        formset = EducationFormSet(self.request.POST, queryset=Education.objects.filter(user=self.request.user))
-        if formset.is_valid():
-
-            form.instance.user = self.request.user
-            self.object = form.save()
-            instances = formset.save(commit=False)
-            for instance in instances:
-                instance.user = self.request.user
-                instance.save()
-            messages.success(self.request, "Your Profile was updated successfully.")
-
-    def form_invalid(self, form):
-        print(form)
-        return form
-
-
-#
+    def post(self, request):
+        education = Education.objects.filter(user=self.request.user)
+        EducationFormSet = modelformset_factory(Education, form=EducationForm)
+        education_formset = EducationFormSet(request.POST)
+        if education_formset.is_valid():
+            for education_form in education_formset:
+                data = education_form.save(commit=False)
+                data.user = request.user
+                data.save()
+        messages.success(request, f'Education Profile Updated Successfully')
+        return redirect('employee-profile-view')
 
 
 class EducationDeleteView(DeleteView):
@@ -292,6 +232,30 @@ class ExperienceCreateView(CreateView):
             return super().form_invalid(form)
 
 
+class ExperienceUpdateView(View):
+
+    def get(self, request):
+        experience = Experience.objects.filter(user=self.request.user)
+        if len(experience) > 0:
+            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
+        else:
+            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=1)
+        context = {'formset': ExperienceFormSet}
+        return render(request, 'Accounts/employee/update_experience.html', context)
+
+    def post(self, request):
+        experience = Experience.objects.filter(user=self.request.user)
+        ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm)
+        experience_formset = ExperienceFormSet(request.POST)
+        if experience_formset.is_valid():
+            for experience_form in experience_formset:
+                data = experience_form.save(commit=False)
+                data.user = request.user
+                data.save()
+        messages.success(request, f'Experience Profile Updated Successfully')
+        return redirect('employee-profile-view')
+
+
 class ExperienceDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
@@ -335,6 +299,29 @@ class SkillCreateView(CreateView):
 
 
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+
+
+class SkillUpdateView(View):
+    def get(self, request):
+        skills = Skill.objects.filter(user=self.request.user)
+        if len(skills) > 0:
+            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+        else:
+            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=1)
+        context = {'formset': SkillFormSet}
+        return render(request, 'Accounts/employee/update_skills.html', context)
+
+    def post(self, request):
+        skills = Skill.objects.filter(user=self.request.user)
+        SkillFormSet = modelformset_factory(Skill, form=SkillForm)
+        skill_formset = SkillFormSet(request.POST)
+        if skill_formset.is_valid():
+            for skill_form in skill_formset:
+                data = skill_form.save(commit=False)
+                data.user = request.user
+                data.save()
+        messages.success(request, f'Skills Profile Updated Successfully')
+        return redirect('employee-profile-view')
 
 
 class SkillDeleteView(DeleteView):
