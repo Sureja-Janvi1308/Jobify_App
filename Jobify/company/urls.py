@@ -11,8 +11,12 @@ urlpatterns = [
     path('mark-active/<int:job_id>/', JobActive.as_view(), name='active'),
     path('updatejob/<int:job_id>/', JobUpdateView.as_view(), name='employer-job-update'),
     path('deletejob/<int:job_id>/', JobDeleteView.as_view(), name='employer-job-delete'),
+    path('jobs', JobListView.as_view(), name='jobs'),
     path('applicants/<int:job_id>/', ApplicantPerJobView.as_view(), name='applicants-view'),
     path('all/applicants/', ApplicantsListView.as_view(), name='all-applicant'),
+    path('profile/view/', ProfileView.as_view(), name='view-employee'),
+    path('mark-select/<int:applicant_id>/', ApplicantSelectionView.as_view(), name='select'),
+
     # path('employer/detailview/', JobDetailView.as_view(), name='job-detail-view')
 
 

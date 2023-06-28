@@ -20,12 +20,26 @@
             <div class="row">
                 {% for applicant in applicants %}
                     <div class="col-lg-6">
-                        <div class="box applicant">
+
+                        <div class="box applicant ">
+                                {% if applicant.is_selected %}
+                                            <a href="{% url 'select' applicant_id=applicant.id %}"
+                                               class="btn btn-outline-white-secondary">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">selected</span>
+                                            </a><br>
+                                        {% else %}
+                                            <a href="{% url 'select' applicant_id=applicant.id %}"
+                                               class="btn btn-outline-white-secondary">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">Mark as </span>select
+                                            </a><br>
+                                        {% endif %}
                             <h4>{{ applicant.applicant.get_full_name }}</h4>
                             <p><strong>Applied position: {{ applicant.job.title }}</strong></p>
                             <a href="#" data-toggle="modal" data-target="#contact-modal"
                                class="btn btn-outline-white-secondary btn-sm">
-                                <i class="fa fa-envelope"></i>{{ applicant.applicant.employeeprofile.phone_number }}
+                                <i class="fa fa-envelope"></i>Contact
                             </a>
                             <p>
                                 <span class="badge badge-info">Applied {{ applicant.date_posted.astimezone }}</span>
@@ -36,7 +50,13 @@
                                     <img src="{{ applicant.applicant.employeeprofile.profile_pic.url }}" alt=""
                                          class="img-fluid rounded-circle">
                                 </div>
+
                             </div>
+                                 <div class="text-center mt-4 mb-3">
+                    <a href="{% url 'resume-preview' %}" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> View Profile
+                    </a>
+
+                </div>
                         </div>
                     </div>
                 {% endfor %}

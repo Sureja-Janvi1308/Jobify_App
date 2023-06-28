@@ -9,29 +9,32 @@
     <section class="job-form-section job-form-section--compressed">
         <div class="container">
             <h4 class="heading">Find a <span class="accent">job </span> you will <span class="accent">love</span></h4>
-            <form id="job-main-form" method="get" action="{% url 'search-job' %}" class="job-main-form">
-                <div class="controls">
-                    <div class="row align-items-end">
-                        <div class="col-sm-1 col-lg-2"></div>
-                        <div class="col-sm-5 col-lg-4 form-group">
-                            <label for="profession">Position</label>
-                            <input type="text" id="title" name="s"
-                                   placeholder="Position you are looking for" class="form-control">
-                        </div>
-                        <div class="col-sm-5 col-lg-4 form-group">
-                            <label for="location">Location</label>
-                            <input type="text" id="city" name="q" placeholder="Any particular location?"
-                                   value="" class="form-control">
-                        </div>
-                        <div class="col-sm-1 col-lg-2 form-group">
-                            <button type="submit"
-                                    class="btn btn-outline-white-primary job-main-form__button">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </form>
+           <form id="job-main-form" method="get" action="{% url 'search-job' %}" class="job-main-form">
+                            <div class="controls">
+                                <div class="row align-items-center">
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="profession">Position</label>
+                                            <input type="text" id="title" name="s"
+                                                   placeholder="Position you are looking for" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="form-group">
+                                            <label for="location">Location</label>
+                                            <input type="text" id="city" name="q"
+                                                   placeholder="Any particular location?" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="submit"
+                                                class="btn btn-outline-white-primary job-main-form__button">
+                                            <i class="fa fa-search"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
         </div>
     </section>
     <section>
@@ -46,8 +49,7 @@
                                 <div class="col-10">
                                     <h4 class="job__title"><a
                                             href="{% url 'job-detail' job.id %}">{{ job.title }}</a></h4>
-                                    <p class="job__company">
-
+                                    <p class="job__company">Company :
                                         {{ job.user.employerprofile.company_name }}
                                     </p>
                                 </div>
@@ -58,6 +60,14 @@
                         </div>
                         <div class="col-10 col-md-3 col-lg-3 ml-auto">
                             <p>Posted {{ job.date_posted|timesince }}</p>
+                        </div>
+                         <div class="col-sm-12 col-md-2 col-lg-1">
+                            <div class="job__star">
+                                <a href="#" data-toggle="tooltip" data-placement="top"
+                                   title="Save to favourites" class="job__star__link">
+                                    <i class="fa fa-star"></i>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

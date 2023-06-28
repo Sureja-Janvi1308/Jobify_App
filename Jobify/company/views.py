@@ -94,6 +94,15 @@ class JobCreateView(CreateView):
     success_url = reverse_lazy('dashboard')
 
     def form_valid(self, form):
+        if not self.request.user.is_authenticated:
+            messages.error(self.request, f'Please Login or Create An Account before Posting a Job')
+            return render(self.request, 'error.html')
+        user = self.request.user
+        try:
+            employer_profile = user.employerprofile
+        except EmployerProfile.DoesNotExist:
+            messages.error(self.request, 'Please Create Your Profile before Posting a Job')
+            return self.form_invalid(form)
         form.instance.user = self.request.user
         return super().form_valid(form)
 
@@ -108,6 +117,16 @@ class JobActive(View):
         return redirect('dashboard')
 
 
+class ApplicantSelectionView(View):
+
+    def get(self, request, applicant_id=None):
+
+        applicant = get_object_or_404(Applicants, id=applicant_id)
+        applicant.is_selected = not applicant.is_selected
+        applicant.save()
+
+        return redirect('all-applicant')
+
 class JobUpdateView(UpdateView):
     model = Job
     template_name = 'Accounts/employer/job_edit.html'
@@ -117,7 +136,6 @@ class JobUpdateView(UpdateView):
     def get_object(self, queryset=None):
         obj, created = Job.objects.get_or_create(id=self.kwargs['job_id'])
         return obj
-
 
     def form_valid(self, form):
         messages.success(self.request, "The job  was updated successfully.")
@@ -140,7 +158,6 @@ class ApplicantPerJobView(ListView):
     context_object_name = 'applicants'
     paginate_by = 1
 
-
     def get_queryset(self):
         return Applicants.objects.filter(job_id=self.kwargs['job_id']).order_by('id')
 
@@ -148,7 +165,6 @@ class ApplicantPerJobView(ListView):
         context = super().get_context_data(**kwargs)
         context['job'] = Job.objects.get(id=self.kwargs['job_id'])
         return context
-
 
 
 class ApplicantsListView(ListView):
@@ -188,3 +204,14 @@ class JobDetailsView(DetailView):
             raise Http404("Job doesn't exists")
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
+
+
+class ProfileView(ListView):
+        model = Applicants
+        template_name = 'Accounts/employer/view_employee.html'
+        context_object_name = 'applicants'
+
+        def get_queryset(self):
+            # jobs = Job.objects.filter(user_id=self.request.user.id)
+            return self.model.objects.filter(job__user_id=self.request.user.id)
+

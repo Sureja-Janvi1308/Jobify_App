@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 
+from django.contrib.messages import constants as messages
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -42,6 +44,7 @@ INSTALLED_APPS = [
     'django_countries',
     'phone_field',
     'crispy_bootstrap4',
+    'django_celery_beat',
     # Apps in project
     'authentication',
     'company',
@@ -180,3 +183,19 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SESSION_EXPIRE_SECONDS = 3600 # Expire after 30 minutes
 SESSION_EXPIRE_AFTER_LAST_ACTIVITY = True
 SESSION_TIMEOUT_REDIRECT = 'loginPage' # Add your URL
+
+
+#message tags
+MESSAGE_TAGS = {messages.DEBUG: 'debug',
+                messages.INFO: 'info',
+                messages.SUCCESS: 'success',
+                messages.WARNING: 'warning',
+                messages.ERROR: 'danger',
+                }
+
+#celery settings
+
+CELERY_BROKER_URL = 'redis://localhost:6379'
+CELERY_TIMEZONE = 'Asia/Kolkata'
+CELERY_RESULT_BACKEND = 'redis://localhost:6379'
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'

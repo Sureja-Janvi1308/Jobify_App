@@ -5,6 +5,7 @@ from crispy_forms.layout import Submit
 from django import forms
 
 from company.models import EmployerProfile, Job, Applicants
+from employee.models import Applied_Jobs
 
 
 class EmployerProfileForm(forms.ModelForm):
@@ -41,7 +42,7 @@ class EmployerProfileForm(forms.ModelForm):
 
     def clean_company_name(self):
         company_name = self.cleaned_data['company_name']
-        if re.search(r'\d', company_name) or re.search(r'\W', company_name) :
+        if re.search(r'\d', company_name) or re.search(r'\W', company_name):
             raise forms.ValidationError('Company name should not contain any number or special characters')
         return company_name
 
@@ -76,18 +77,17 @@ class CreateJobForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save'))
 
-    def clean_title(self):
-        title = self.cleaned_data['title']
-        if title.isalnum():
-            raise forms.ValidationError('title should not contain any special characters')
-        return title
-
-
 
 
 
 class ApplyJobForm(forms.ModelForm):
-
     class Meta:
         model = Applicants
-        fields = ('job',)
+        fields = ('job', )
+
+
+class AppliedJobForm(forms.ModelForm):
+
+    class Meta:
+        model = Applied_Jobs
+        fields = ('job', )

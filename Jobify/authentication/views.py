@@ -42,7 +42,7 @@ class RegisterEmployeeView(CreateView):
             user.save()
             return redirect('Homepage')
         else:
-            return render(request, 'Accounts/employee/register.html', {'form': form })
+            return render(request, 'Accounts/employee/register.html', {'form': form})
 
 
 class RegisterEmployerView(CreateView):
@@ -66,7 +66,7 @@ class RegisterEmployerView(CreateView):
             user.save()
             return redirect('dashboard')
         else:
-            return render(request, 'Accounts/employer/register.html', {'form': form })
+            return render(request, 'Accounts/employer/register.html', {'form': form})
 
 
 class LoginView(FormView):
@@ -88,7 +88,8 @@ class LoginView(FormView):
 
     def form_valid(self, form):
         auth.login(self.request, form.get_user())
-        return HttpResponseRedirect(self.get_success_url())
+        # return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)
 
 
 class LogoutView(LoginRequiredMixin, RedirectView):

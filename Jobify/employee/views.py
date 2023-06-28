@@ -16,7 +16,7 @@ from django.views.generic import UpdateView, CreateView, DeleteView, DetailView,
 from django.views.generic.edit import UpdateView
 from django.forms import modelformset_factory
 from authentication.models import CustomUser
-from company.forms import ApplyJobForm
+from company.forms import ApplyJobForm, AppliedJobForm
 from company.models import Job, EmployerProfile, Applicants
 from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, ExperienceFormSet, \
     EducationFormSet
@@ -359,30 +359,29 @@ class JobDetailView(DetailView):
         return context
 
 
-class ApplyJobView(CreateView):
-    model = Applicants
-    form_class = ApplyJobForm
-    slug_field = 'job_id'
-    slug_url_kwarg = 'job_id'
-
+class ApplyJobView(View):
     def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        if form.is_valid():
-            messages.info(self.request, 'Successfully applied for this Job')
-            return self.form_valid(form)
-        else:
-            return HttpResponseRedirect(reverse_lazy('Homepage'))
+        user = request.user
+        try:
+            employeeprofile = user.employeeprofile
+        except EmployeeProfile.DoesNotExist:
+            messages.error(request, f'Please Create Employee Profile First')
+            return render(self.request, 'error.html')
 
-    def form_valid(self, form):
-        applicants = Applicants.objects.filter(applicant=self.request.user.id, job_id=self.kwargs['job_id'])
-        if applicants:
-            messages.info(self.request, 'You have already applied for this Job')
-            return HttpResponseRedirect(reverse_lazy('Homepage'))
-        applicant = form.save(commit=False)
-        applicant.applicant = self.request.user
-        applicant.save()
+        job = get_object_or_404(Job, pk=self.kwargs['job_id'])
 
-        return self.form_valid(form)
+        applicant = Applicants.objects.create(
+            job=job,
+            applicant=self.request.user
+        )
+        applied_job_form = AppliedJobForm(request.POST)
+        if applied_job_form.is_valid():
+            applied_job = applied_job_form.save(commit=False)
+        applied_job.job = job
+        applied_job.user = self.request.user
+        applied_job.save()
+        messages.success(self.request, f'Successfully applied For the Job')
+        return HttpResponseRedirect(reverse_lazy('Homepage'))
 
 
 class GenerateResumeView(View):

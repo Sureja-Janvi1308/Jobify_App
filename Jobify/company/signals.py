@@ -9,9 +9,10 @@ from company.models import Applicants
 @receiver(post_save, sender=Applicants)
 def send_application(sender, instance, created, **kwargs):
     if created:
+        job = instance.job
         job_title = instance.job.title
-        applicant_name = instance.job.user.first_name + ' ' + instance.job.last_name
-        employer_email = instance.user.employer_profile.email
+        applicant_name = instance.applicant.first_name + ' ' + instance.applicant.last_name
+        employer_email = instance.job.user.email
         subject = 'New Job Application for { job_title }'
         context = {
             'job_title': job_title,
