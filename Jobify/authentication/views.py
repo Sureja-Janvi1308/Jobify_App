@@ -81,15 +81,15 @@ class LoginView(FormView):
         'title': 'Login'
     }
 
-    def dispatch(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            return redirect(self.get_success_url())
-        return super().dispatch(request, *args, **kwargs)
+    # def dispatch(self, request, *args, **kwargs):
+    #     if self.request.user.is_authenticated:
+    #         return redirect(self.get_success_url())
+    #     return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         auth.login(self.request, form.get_user())
-        # return HttpResponseRedirect(self.get_success_url())
-        return super().form_valid(form)
+        return HttpResponseRedirect(self.get_success_url())
+
 
 
 class LogoutView(LoginRequiredMixin, RedirectView):

@@ -60,6 +60,7 @@ class EmployeeProfileForm(forms.ModelForm):
         self.fields['first_name'].initial = user.first_name
         self.fields['last_name'].initial = user.last_name
         self.fields['email'].initial = user.email
+        self.fields['first_name'].widget.attrs['readonly'] = True
 
 
 class EducationForm(forms.ModelForm):

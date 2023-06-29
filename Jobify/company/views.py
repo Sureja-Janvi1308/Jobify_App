@@ -9,6 +9,7 @@ from django.views.generic import CreateView, TemplateView, UpdateView, DeleteVie
 
 from company.forms import EmployerProfileForm, CreateJobForm
 from company.models import EmployerProfile, Job, Applicants
+from company.tasks import send_selected_email_task
 
 
 # Create your views here.
@@ -120,12 +121,15 @@ class JobActive(View):
 class ApplicantSelectionView(View):
 
     def get(self, request, applicant_id=None):
-
         applicant = get_object_or_404(Applicants, id=applicant_id)
         applicant.is_selected = not applicant.is_selected
         applicant.save()
 
+        if applicant.is_selected:
+            send_selected_email_task.delay(applicant.id)
+
         return redirect('all-applicant')
+
 
 class JobUpdateView(UpdateView):
     model = Job
@@ -179,14 +183,14 @@ class ApplicantsListView(ListView):
 
 class JobListView(ListView):
     model = Job
-    template_name = 'jobs/jobs.html'
+    template_name = 'Accounts/employee/jobs.html'
     context_object_name = 'jobs'
     paginate_by = 5
 
 
 class JobDetailsView(DetailView):
     model = Job
-    template_name = 'jobs/details.html'
+    template_name = 'Accounts/employee/details.html'
     context_object_name = 'job'
     pk_url_kwarg = 'id'
 
@@ -207,11 +211,10 @@ class JobDetailsView(DetailView):
 
 
 class ProfileView(ListView):
-        model = Applicants
-        template_name = 'Accounts/employer/view_employee.html'
-        context_object_name = 'applicants'
+    model = Applicants
+    template_name = 'Accounts/employer/view_employee.html'
+    context_object_name = 'applicants'
 
-        def get_queryset(self):
-            # jobs = Job.objects.filter(user_id=self.request.user.id)
-            return self.model.objects.filter(job__user_id=self.request.user.id)
-
+    def get_queryset(self):
+        # jobs = Job.objects.filter(user_id=self.request.user.id)
+        return self.model.objects.filter(job__user_id=self.request.user.id)

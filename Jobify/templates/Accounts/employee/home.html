@@ -83,7 +83,7 @@
             <h3 class="heading">Featured jobs</h3>
             <div class="row featured align-items-stretch">
                 {% for job in jobs %}
-                {% if job.is_active %}
+
                     <div class="col-lg-4 mb-5 mb-lg-0">
                         <div class="box-image-text bg-visible full-height">
 
@@ -103,7 +103,7 @@
                             </div>
                         </div>
                     </div>
-                {% endif %}
+
                 {% endfor %}
             </div>
         </div>
@@ -112,7 +112,7 @@
         <div class="container">
             <h4 class="heading">Trending this month</h4>
             {% for trending in trendings %}
-            {% if job.is_active %}
+
                 <div class="job-listing  job-listing--last">
                     <div class="row">
                         <div class="col-md-12 col-lg-6">
@@ -144,7 +144,7 @@
                         </div>
                     </div>
                 </div>
-            {% endif %}
+
             {% endfor %}
         </div>
     </section>
