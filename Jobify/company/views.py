@@ -163,6 +163,11 @@ class ApplicantPerJobView(ListView):
     paginate_by = 1
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return redirect('login')
+        return render(self.request, 'payment.html')
+
+
         return Applicants.objects.filter(job_id=self.kwargs['job_id']).order_by('id')
 
     def get_context_data(self, **kwargs):
@@ -210,11 +215,11 @@ class JobDetailsView(DetailView):
         return self.render_to_response(context)
 
 
-class ProfileView(ListView):
-    model = Applicants
-    template_name = 'Accounts/employer/view_employee.html'
-    context_object_name = 'applicants'
-
-    def get_queryset(self):
-        # jobs = Job.objects.filter(user_id=self.request.user.id)
-        return self.model.objects.filter(job__user_id=self.request.user.id)
+# class ProfileView(ListView):
+#     model = Applicants
+#     template_name = 'Accounts/employer/view_employee.html'
+#     context_object_name = 'applicants'
+#
+#     def get_queryset(self):
+#         # jobs = Job.objects.filter(user_id=self.request.user.id)
+#         return self.model.objects.filter(job__user_id=self.request.user.id)

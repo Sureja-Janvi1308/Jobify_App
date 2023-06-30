@@ -10,7 +10,8 @@ from Jobify import settings
 # Create your models here.
 
 class EmployerProfile(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='employerprofile', null=True, on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='employerprofile', null=True,
+                                on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100, null=True, blank=False)
     last_name = models.CharField(max_length=100, null=True, blank=False)
     email = models.EmailField(default='', unique=True)
@@ -18,7 +19,7 @@ class EmployerProfile(models.Model):
     address_1 = models.CharField(_("address"), max_length=128)
     address_2 = models.CharField(_("address contd"), max_length=128, blank=True)
     city = models.CharField(_("city"), max_length=64)
-    state = models.CharField(_("state"),max_length=100 )
+    state = models.CharField(_("state"), max_length=100)
     pincode = models.CharField(_("zip code"), max_length=6)
     country = CountryField()
     mobile = models.CharField(max_length=100, unique=True)
@@ -39,7 +40,7 @@ class Job(models.Model):
         ('internship', 'Internship'),
         ('remote', 'Remote'),
     )
-    user = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='job', default='', on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='job', default='', on_delete=models.CASCADE)
     title = models.CharField(max_length=200)
     description = models.TextField(max_length=300)
     job_type = models.CharField(max_length=30, choices=CHOICES, default='', null=True)
@@ -62,3 +63,38 @@ class Applicants(models.Model):
 
     def __str__(self):
         return self.applicant
+
+
+PAYMENT_STATUS = (
+    ('success', 'Success'),
+    ('failure', 'Failure'),
+    ('pending', 'Payment')
+
+)
+
+
+class TimeStamped(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Wallet(TimeStamped):
+    company = models.OneToOneField(EmployerProfile, related_name='wallets', on_delete=models.CASCADE, )
+    balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    total_earned = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    total_spent = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    transaction = models.PositiveIntegerField(default=0)
+
+
+class Te
+
+
+class Payment(TimeStamped):
+    company = models.ForeignKey(EmployerProfile, related_name='payments', on_delete=models.CASCADE)
+    transaction_id = models.CharField(max_length=100)
+    amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    status = models.CharField(choices=PAYMENT_STATUS, max_length=100)
+

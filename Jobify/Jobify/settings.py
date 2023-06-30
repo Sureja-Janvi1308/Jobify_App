@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 import environ
 
-
 from pathlib import Path
 
 from django.contrib.messages import constants as messages
@@ -186,10 +185,13 @@ MESSAGE_TAGS = {messages.DEBUG: 'debug',
                 }
 
 # celery settings
-
 CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL")
 CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# razor pay
+RAZOR_KEY_ID = os.environ.get("RAZOR_PAY_KEY_ID")
+RAZOR_KEY_SECRET = os.environ.get("RAZOR_SECRET")
