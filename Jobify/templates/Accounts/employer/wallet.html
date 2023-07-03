@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Wallet</title>
+</head>
+<body>
+{% if wallet %}
+<h1>Company Wallet: {{ wallet.company }}</h1>
+<h2>Balance : {{ wallet.balance }}</h2>
+
+{% else %}
+<p>No wallet Found</p>
+{% endif %}
+
+
+</body>
+</html>

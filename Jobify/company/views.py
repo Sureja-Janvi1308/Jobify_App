@@ -1,3 +1,4 @@
+import razorpay
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import Http404
@@ -7,8 +8,9 @@ from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView, DetailView
 
+from Jobify import settings
 from company.forms import EmployerProfileForm, CreateJobForm
-from company.models import EmployerProfile, Job, Applicants
+from company.models import EmployerProfile, Job, Applicants, Wallet, Payment
 from company.tasks import send_selected_email_task
 
 
@@ -165,9 +167,6 @@ class ApplicantPerJobView(ListView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:
             return redirect('login')
-        return render(self.request, 'payment.html')
-
-
         return Applicants.objects.filter(job_id=self.kwargs['job_id']).order_by('id')
 
     def get_context_data(self, **kwargs):
@@ -180,10 +179,15 @@ class ApplicantsListView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/all-applicants.html'
     context_object_name = 'applicants'
+    success_url = ''
 
     def get_queryset(self):
         # jobs = Job.objects.filter(user_id=self.request.user.id)
         return self.model.objects.filter(job__user_id=self.request.user.id)
+
+
+def Payment(request):
+    return render(request, 'Accounts/employer/payment_1.html')
 
 
 class JobListView(ListView):
@@ -215,11 +219,34 @@ class JobDetailsView(DetailView):
         return self.render_to_response(context)
 
 
-# class ProfileView(ListView):
-#     model = Applicants
-#     template_name = 'Accounts/employer/view_employee.html'
-#     context_object_name = 'applicants'
-#
-#     def get_queryset(self):
-#         # jobs = Job.objects.filter(user_id=self.request.user.id)
-#         return self.model.objects.filter(job__user_id=self.request.user.id)
+## payment view
+
+class PaymentHandlerView(View):
+    def post(self):
+        amount = self.request.POST.get("amount")
+        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
+        razorpay_order = client.order.create(
+            {"amount": int(amount) * 100, "currency": "INR", "payment_capture": "1"}
+        )
+        order = Payment.objects.create(amount=amount, provider_order_id=razorpay_order["id"]
+                                       )
+        order.save()
+        return render(
+            self.request,
+            "payment.html",
+            {
+                "callback_url": "http://" + "127.0.0.1:8000" + "/razorpay/callback/",
+                "razorpay_key": settings.RAZOR_KEY_ID,
+                "order": order,
+            },
+        )
+
+
+class WalletView(TemplateView):
+    template_name = 'Accounts/employer/wallet.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        wallet = Wallet.objects.get(company__user=self.request.user)
+        context['wallet'] = wallet
+        return context

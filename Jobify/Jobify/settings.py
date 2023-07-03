@@ -190,7 +190,7 @@ CELERY_TIMEZONE = 'Asia/Kolkata'
 CELERY_RESULT_BACKEND = os.environ.get("CELERY_RESULT_BACKEND")
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TASK_SERIALIZER = 'json'
-CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+CELERY_BEAT_SCHEDULER = os.environ.get('CELERY_BEAT_SCHEDULER')
 
 # razor pay
 RAZOR_KEY_ID = os.environ.get("RAZOR_PAY_KEY_ID")

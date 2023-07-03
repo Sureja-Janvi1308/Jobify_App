@@ -68,7 +68,7 @@ class Applicants(models.Model):
 PAYMENT_STATUS = (
     ('success', 'Success'),
     ('failure', 'Failure'),
-    ('pending', 'Payment')
+    ('pending', 'Pending')
 
 )
 
@@ -84,17 +84,28 @@ class TimeStamped(models.Model):
 class Wallet(TimeStamped):
     company = models.OneToOneField(EmployerProfile, related_name='wallets', on_delete=models.CASCADE, )
     balance = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    total_earned = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    total_spent = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    transaction = models.PositiveIntegerField(default=0)
 
 
-class Te
-
-
-class Payment(TimeStamped):
-    company = models.ForeignKey(EmployerProfile, related_name='payments', on_delete=models.CASCADE)
-    transaction_id = models.CharField(max_length=100)
+class Transaction(TimeStamped):
+    wallet = models.ForeignKey(Wallet, related_name='transactions', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
-    status = models.CharField(choices=PAYMENT_STATUS, max_length=100)
 
+
+class Payment(models.Model):
+    name = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, max_length=254, blank=False,
+                             null=False)
+    amount = models.FloatField(_("Amount"), null=False, blank=False)
+    status = models.CharField(_("Payment Status"), choices=PAYMENT_STATUS, default='Pending', max_length=254,
+                              blank=False, null=False, )
+    provider_order_id = models.CharField(
+        _("Order ID"), max_length=40, null=False, blank=False
+    )
+    payment_id = models.CharField(
+        _("Payment ID"), max_length=36, null=False, blank=False
+    )
+    signature_id = models.CharField(
+        _("Signature ID"), max_length=128, null=False, blank=False
+    )
+
+    def __str__(self):
+        return f"{self.id}-{self.name}-{self.status}"

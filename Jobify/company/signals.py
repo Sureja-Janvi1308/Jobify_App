@@ -1,9 +1,9 @@
 from django.core.mail import send_mail
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
+from django.contrib.auth.signals import user_logged_in
 from Jobify.settings import DEFAULT_FROM_EMAIL
-from company.models import Applicants
+from company.models import Applicants, EmployerProfile, Wallet
 
 
 @receiver(post_save, sender=Applicants)
@@ -21,3 +21,9 @@ def send_application(sender, instance, created, **kwargs):
         message = f'Hello, \n\nA new Application has been received  for the position of {job_title}\n\nApplicant : {applicant_name}'
         from_email = DEFAULT_FROM_EMAIL
         send_mail(subject, message, from_email, [employer_email])
+
+
+@receiver(post_save, sender=EmployerProfile)
+def create_wallet(sender, instance, created, **kwargs):
+    if created:
+        Wallet.objects.create(company=instance, balance=0.00)
