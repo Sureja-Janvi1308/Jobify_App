@@ -1,5 +1,6 @@
 from django.urls import path
 from .views import *
+from django.views.decorators.csrf import csrf_exempt
 
 urlpatterns = [
     path('dashboard',DashboardView.as_view(), name='dashboard' ),
@@ -14,10 +15,10 @@ urlpatterns = [
     path('jobs', JobListView.as_view(), name='jobs'),
     path('applicants/<int:job_id>/', ApplicantPerJobView.as_view(), name='applicants-view'),
     path('all-applicants/', ApplicantsListView.as_view(), name='all-applicant'),
-    path('payment/', Payment, name='payment'),
+    path('payment/', Payments, name='payment'),
     path('wallet/', WalletView.as_view(), name='wallet'),
 
-    path('payment-gateway/', PaymentHandlerView.as_view(), name='payment-handler'),
+    path('paymenthandler/', csrf_exempt(PaymentHandlerView.as_view()), name='paymenthandler'),
     path('mark-select/<int:applicant_id>/', ApplicantSelectionView.as_view(), name='select'),
 
 

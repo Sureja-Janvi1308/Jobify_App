@@ -96,15 +96,15 @@ class Payment(models.Model):
                              null=False)
     amount = models.FloatField(_("Amount"), null=False, blank=False)
     status = models.CharField(_("Payment Status"), choices=PAYMENT_STATUS, default='Pending', max_length=254,
-                              blank=False, null=False, )
+                              blank=True, null=True, )
     provider_order_id = models.CharField(
-        _("Order ID"), max_length=40, null=False, blank=False
+        _("Order ID"), max_length=40, null=True, blank=True
     )
     payment_id = models.CharField(
         _("Payment ID"), max_length=36, null=False, blank=False
     )
     signature_id = models.CharField(
-        _("Signature ID"), max_length=128, null=False, blank=False
+        _("Signature ID"), max_length=128, null=True, blank=True
     )
 
     def __str__(self):

@@ -167,7 +167,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_USE_TLS = True
 EMAIL_HOST = os.environ.get("EMAIL_HOST")
 EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
-EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+EMAIL_HOST_PASSWORD = 'hdgywpjdmxensvnq'
 EMAIL_PORT = os.environ.get("EMAIL_PORT")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
@@ -193,5 +193,5 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_BEAT_SCHEDULER = os.environ.get('CELERY_BEAT_SCHEDULER')
 
 # razor pay
-RAZOR_KEY_ID = os.environ.get("RAZOR_PAY_KEY_ID")
-RAZOR_KEY_SECRET = os.environ.get("RAZOR_SECRET")
+KEY = 'rzp_test_oAKiUtAB24GyXw'
+SECRET = 'wZ8HbYdwNeVZyTrdY2qYY1ex'

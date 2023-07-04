@@ -39,19 +39,28 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
+                    {% if wallet_balance == 0 %}
                     <h1 class="heading">All applicants who applied for your position</h1>
+                    {% else %}
+                                        <h1 id="blur" class="heading">All applicants who applied for your position</h1>
+
+                    {% endif %}
+
                 </div>
             </div>
         </div>
     </section>
     <section>
         <div  class="container">
-            <div  class="row">
+            <div   class="row">
+
                 {% for applicant in applicants %}
+
+
                     <div class="col-lg-6">
 
                         <div  class="box applicant ">
-
+                                {% if wallet_balance >= 10 %}
                                 {% if applicant.is_selected %}
                                             <a href="{% url 'select' applicant_id=applicant.id %}"
                                                class="btn btn-outline-white-secondary">
@@ -65,6 +74,21 @@
                                                 <span class="hidden-xs hidden-sm">Mark as </span>select
                                             </a><br>
                                         {% endif %}
+                            {% else %}
+                             {% if applicant.is_selected %}
+                                            <a href="{% url 'select' applicant_id=applicant.id %}"
+                                               class="btn btn-outline-white-secondary">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">selected</span>
+                                            </a><br>
+                                        {% else %}
+                                            <a id="blur" href="{% url 'select' applicant_id=applicant.id %}"
+                                               class="btn btn-outline-white-secondary">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">Mark as </span>select
+                                            </a><br>
+                                        {% endif %}
+                            {% endif %}
 
                             <h4 >{{ applicant.applicant.get_full_name }}</h4>
                             <p><strong>Applied position: {{ applicant.job.title }}</strong></p>
@@ -83,7 +107,6 @@
                                 </div>
 
                             </div>
-
 
                             <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">
 Make Payment to View Applicant Details
@@ -134,6 +157,7 @@ Make Payment to View Applicant Details
                 {% else %}
 
                 {% endif %}
+
             </div>
         </div>
     </section>

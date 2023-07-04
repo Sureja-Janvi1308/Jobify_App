@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import razorpay
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,8 +11,9 @@ from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView, DetailView
 
 from Jobify import settings
+from authentication.models import CustomUser
 from company.forms import EmployerProfileForm, CreateJobForm
-from company.models import EmployerProfile, Job, Applicants, Wallet, Payment
+from company.models import EmployerProfile, Job, Applicants, Wallet, Payment, Transaction
 from company.tasks import send_selected_email_task
 
 
@@ -179,15 +182,17 @@ class ApplicantsListView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/all-applicants.html'
     context_object_name = 'applicants'
-    success_url = ''
 
     def get_queryset(self):
-        # jobs = Job.objects.filter(user_id=self.request.user.id)
-        return self.model.objects.filter(job__user_id=self.request.user.id)
+        return self.model.objects.filter(job__user=self.request.user.id)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
 
-def Payment(request):
-    return render(request, 'Accounts/employer/payment_1.html')
+        employer_profile = user.employerprofile
+        context['wallet_balance'] = employer_profile.wallets.balance  # Get wallet balance
+        return context
 
 
 class JobListView(ListView):
@@ -220,26 +225,66 @@ class JobDetailsView(DetailView):
 
 
 ## payment view
+def Payments(request):
+    razorpay_client = razorpay.Client(
+        auth=(settings.KEY, settings.SECRET))
+    currency = 'INR'
+    amount = 20000
+
+    # Create a Razorpay Order
+    razorpay_order = razorpay_client.order.create({'amount': 20000, 'currency': 'INR', 'payment_capture': 1})
+    razorpay_order_id = razorpay_order['id']
+    callback_url = request.build_absolute_uri('/') + "paymenthandler/"
+    payment = Payment.objects.create(name=request.user, amount=amount, provider_order_id=razorpay_order_id)
+    payment.save()
+
+    # we need to pass these details to frontend.
+    context = {'razorpay_order_id': razorpay_order_id, 'razorpay_merchant_key': settings.KEY,
+               'razorpay_amount': amount, 'currency': currency, 'callback_url': callback_url}
+
+    return render(request, 'Accounts/employer/payment_1.html', context=context)
+
 
 class PaymentHandlerView(View):
-    def post(self):
-        amount = self.request.POST.get("amount")
-        client = razorpay.Client(auth=(settings.RAZOR_KEY_ID, settings.RAZOR_KEY_SECRET))
-        razorpay_order = client.order.create(
-            {"amount": int(amount) * 100, "currency": "INR", "payment_capture": "1"}
-        )
-        order = Payment.objects.create(amount=amount, provider_order_id=razorpay_order["id"]
-                                       )
+    def verify_signature(self, response_data):
+        client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+        return client.utility.verify_payment_signature(response_data)
+
+    def post(self, request):
+
+        razorpay_client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
+        payment_id = request.POST.get('razorpay_payment_id', '')
+        razorpay_order_id = request.POST.get('razorpay_order_id', '')
+        signature = request.POST.get('razorpay_signature', '')
+        params_dict = {
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_payment_id': payment_id,
+            'razorpay_signature': signature
+        }
+        order = Payment.objects.get(provider_order_id=razorpay_order_id)
+
+        order.payment_id = payment_id
+        order.signature_id = signature
         order.save()
-        return render(
-            self.request,
-            "payment.html",
-            {
-                "callback_url": "http://" + "127.0.0.1:8000" + "/razorpay/callback/",
-                "razorpay_key": settings.RAZOR_KEY_ID,
-                "order": order,
-            },
-        )
+
+        wallet = Wallet.objects.get(company__user=request.user)
+
+        if self.verify_signature(request.POST):
+            order.status = 'Success'
+            order.save()
+            messages.success(request, f'Your payment done successfully')
+
+            wallet.balance += Decimal(order.amount)
+            wallet.save()
+            messages.success(request, f'Your amount is added to wallet')
+
+            transaction = Transaction.objects.create(wallet=wallet, amount=order.amount)
+            return redirect('wallet')
+        else:
+            order.status = 'Failure'
+            order.save()
+            messages.success(request, f'Your Payment is Failed ')
+            return redirect('wallet')
 
 
 class WalletView(TemplateView):
