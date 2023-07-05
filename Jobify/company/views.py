@@ -3,7 +3,7 @@ from decimal import Decimal
 import razorpay
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -14,6 +14,7 @@ from Jobify import settings
 from authentication.models import CustomUser
 from company.forms import EmployerProfileForm, CreateJobForm
 from company.models import EmployerProfile, Job, Applicants, Wallet, Payment, Transaction
+from company.signals import deduct_balance
 from company.tasks import send_selected_email_task
 
 
@@ -127,13 +128,17 @@ class ApplicantSelectionView(View):
 
     def get(self, request, applicant_id=None):
         applicant = get_object_or_404(Applicants, id=applicant_id)
-        applicant.is_selected = not applicant.is_selected
-        applicant.save()
+        wallet = Wallet.objects.get(company__user=request.user)
+        if wallet.balance >= 3:
 
-        if applicant.is_selected:
-            send_selected_email_task.delay(applicant.id)
+            applicant.is_selected = not applicant.is_selected
+            applicant.save()
+            if applicant.is_selected:
+                send_selected_email_task.delay(applicant.id)
 
-        return redirect('all-applicant')
+            return redirect('all-applicant')
+        else:
+            HttpResponse('Insufficient balance!! Please do check your Wallet')
 
 
 class JobUpdateView(UpdateView):
@@ -187,12 +192,14 @@ class ApplicantsListView(ListView):
         return self.model.objects.filter(job__user=self.request.user.id)
 
     def get_context_data(self, **kwargs):
+
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
         employer_profile = user.employerprofile
-        context['wallet_balance'] = employer_profile.wallets.balance  # Get wallet balance
+        context['wallet_balance'] = employer_profile.wallets.balance
         return context
+
 
 
 class JobListView(ListView):
@@ -235,6 +242,7 @@ def Payments(request):
     razorpay_order = razorpay_client.order.create({'amount': 20000, 'currency': 'INR', 'payment_capture': 1})
     razorpay_order_id = razorpay_order['id']
     callback_url = request.build_absolute_uri('/') + "paymenthandler/"
+
     payment = Payment.objects.create(name=request.user, amount=amount, provider_order_id=razorpay_order_id)
     payment.save()
 

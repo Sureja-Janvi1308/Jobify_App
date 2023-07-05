@@ -387,6 +387,7 @@ class ApplyJobView(View):
 class GenerateResumeView(View):
     def get(self, request):
         user = self.request.user
+
         employee_profile = EmployeeProfile.objects.get(user=user)
         educations = Education.objects.filter(user=user)
         experiences = Experience.objects.filter(user=user)

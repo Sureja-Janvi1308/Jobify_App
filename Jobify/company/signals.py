@@ -1,5 +1,5 @@
 from django.core.mail import send_mail
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 from django.contrib.auth.signals import user_logged_in
 from Jobify.settings import DEFAULT_FROM_EMAIL
@@ -27,3 +27,22 @@ def send_application(sender, instance, created, **kwargs):
 def create_wallet(sender, instance, created, **kwargs):
     if created:
         Wallet.objects.create(company=instance, balance=0.00)
+
+
+@receiver(post_save, sender=Applicants)
+def deduct_balance(sender, instance, created, **kwargs):
+    if not created and instance.is_selected:
+        wallet = Wallet.objects.get(company=instance.job.user.employerprofile)
+        if wallet.balance >= 3:
+            wallet.balance -= 3
+            wallet.save()
+    # if instance.view_resume:
+    #     wallet = Wallet.objects.get(user=instance.job.user)
+    #     if wallet.balance >= 5:
+    #         wallet.balance -= 5
+    #         wallet.save()
+    # if instance.EmployeeProfile:
+    #     wallet = Wallet.objects.get(user=instance.job.user)
+    #     if wallet.balance >= 10:
+    #         wallet.balance -= 10
+    #         wallet.save()

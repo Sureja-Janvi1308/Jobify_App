@@ -6,45 +6,16 @@
 
 
 {% block content %}
-<style>
-    #blur {
-        filter: blur(5px);
-      }
-      </style>
 
-<!-- Payment Modal -->
-<div class="modal fade" id="paymentModal" tabindex="-1" role="dialog" aria-labelledby="paymentModalLabel" aria-hidden="true">
-<div class="modal-dialog" role="document">
-<div class="modal-content">
-<div class="modal-header">
-<h5 class="modal-title" id="paymentModalLabel">Payment Required</h5>
-<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-<span aria-hidden="true">&times;</span>
-</button>
-</div>
-<div class="modal-body">
-<p>Please make a payment to view the applicant details.</p>
-<!-- Add your payment form or payment integration code here -->
-</div>
-<div class="modal-footer">
-<a href="{% url 'payment' %}" type="button" class="btn btn-primary" data-dismiss="modal">Make payment</a>
-<!-- Add additional buttons or actions related to payment here -->
-</div>
-</div>
-</div>
-</div>
+
 
 
     <section class="bg-light-gray">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
-                    {% if wallet_balance == 0 %}
-                    <h1 class="heading">All applicants who applied for your position</h1>
-                    {% else %}
-                                        <h1 id="blur" class="heading">All applicants who applied for your position</h1>
 
-                    {% endif %}
+                    <h1 class="heading">All applicants who applied for your position</h1>
 
                 </div>
             </div>
@@ -53,14 +24,16 @@
     <section>
         <div  class="container">
             <div   class="row">
-
+{% if wallet_balance != 0 %}
                 {% for applicant in applicants %}
 
 
                     <div class="col-lg-6">
 
                         <div  class="box applicant ">
-                                {% if wallet_balance >= 10 %}
+                            {% if wallet_balance >= 3 %}
+                        <div class="blur">
+
                                 {% if applicant.is_selected %}
                                             <a href="{% url 'select' applicant_id=applicant.id %}"
                                                class="btn btn-outline-white-secondary">
@@ -74,31 +47,26 @@
                                                 <span class="hidden-xs hidden-sm">Mark as </span>select
                                             </a><br>
                                         {% endif %}
-                            {% else %}
-                             {% if applicant.is_selected %}
-                                            <a href="{% url 'select' applicant_id=applicant.id %}"
-                                               class="btn btn-outline-white-secondary">
-                                                <i class="fa fa-check-circle-o"></i>
-                                                <span class="hidden-xs hidden-sm">selected</span>
-                                            </a><br>
-                                        {% else %}
-                                            <a id="blur" href="{% url 'select' applicant_id=applicant.id %}"
-                                               class="btn btn-outline-white-secondary">
-                                                <i class="fa fa-check-circle-o"></i>
-                                                <span class="hidden-xs hidden-sm">Mark as </span>select
-                                            </a><br>
-                                        {% endif %}
                             {% endif %}
 
+                            </div>
+
+                            <div class="blur">
                             <h4 >{{ applicant.applicant.get_full_name }}</h4>
                             <p><strong>Applied position: {{ applicant.job.title }}</strong></p>
+                                </div>
+
+                              <div class="blur">
                             <a href="#" data-toggle="modal" data-target="#contact-modal"
                                class="btn btn-outline-white-secondary btn-sm">
                                 <i class="fa fa-envelope"></i>Contact
                             </a>
+                              </div>
+     <div class="blur">
                             <p>
                                 <span class="badge badge-info">Applied {{ applicant.date_posted.astimezone }}</span>
                             </p>
+
                             <div class="d-flex justify-content-between">
                                 <p class="intro"></p>
                                 <div class="image">
@@ -106,14 +74,17 @@
                                          class="img-fluid rounded-circle">
                                 </div>
 
+
+                            </div>
+                                </div>
+                            <div class="blur">
+                            <a href="{% url 'resume-preview' %}"> view resume</a>
                             </div>
 
-                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#paymentModal">
-Make Payment to View Applicant Details
-</button>
                         </div>
                     </div>
                 {% endfor %}
+                {% endif %}
                 {% if is_paginated %}
                     <div class="row">
                         <div class="col-md-12">
@@ -162,5 +133,13 @@ Make Payment to View Applicant Details
         </div>
     </section>
 
-
+<script>
+    window.addEventListener('DOMContentLoaded', function(){
+        var nameElement = document.getElementByClassName('blur');
+         var deduct_balance = True
+         {
+         
+         }
+    }
+</script>
 {% endblock %}
