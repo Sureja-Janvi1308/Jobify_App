@@ -7,10 +7,7 @@
 
 {% block content %}
 
-
-
-
-    <section class="bg-light-gray">
+<section class="bg-light-gray">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
@@ -57,10 +54,10 @@
                                 </div>
 
                               <div class="blur">
-                            <a href="#" data-toggle="modal" data-target="#contact-modal"
-                               class="btn btn-outline-white-secondary btn-sm">
-                                <i class="fa fa-envelope"></i>Contact
-                            </a>
+                                  <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" data-toggle="modal" data-target="#staticBackdrop">
+ <i class="fa fa-envelope"></i> Contact
+</a>
+
                               </div>
      <div class="blur">
                             <p>
@@ -83,6 +80,27 @@
 
                         </div>
                     </div>
+                <!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Wallet Balance </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        To view Contact of a person money gets deducted from your wallet
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a href="{% url 'view-contact' applicant.id %}" type="button" class="btn btn-primary">{{request.user__applicant}}Sure, I understood </a>
+
+      </div>
+    </div>
+  </div>
+</div>
                 {% endfor %}
                 {% endif %}
                 {% if is_paginated %}

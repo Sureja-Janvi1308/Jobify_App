@@ -1,3 +1,5 @@
+from django.contrib.postgres.fields import ArrayField
+
 from django.db import models
 from django.utils import timezone
 from django_countries.fields import CountryField
@@ -89,6 +91,7 @@ class Wallet(TimeStamped):
 class Transaction(TimeStamped):
     wallet = models.ForeignKey(Wallet, related_name='transactions', on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    access = ArrayField(models.CharField(max_length=10, blank=True), null=True, blank=True)
 
 
 class Payment(models.Model):

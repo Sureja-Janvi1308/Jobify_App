@@ -82,11 +82,6 @@ class DashboardView(ListView):
     template_name = 'Accounts/employer/dashboard.html'
     context_object_name = 'jobs'
 
-    # @method_decorator(login_required(login_url=reverse_lazy('accounts:login')))
-    # @method_decorator(user_is_employer)
-    # def dispatch(self, request, *args, **kwargs):
-    #     return super().dispatch(self.request, *args, **kwargs)
-
     def get_queryset(self):
         return self.model.objects.filter(user_id=self.request.user.id)
 
@@ -192,14 +187,12 @@ class ApplicantsListView(ListView):
         return self.model.objects.filter(job__user=self.request.user.id)
 
     def get_context_data(self, **kwargs):
-
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
         employer_profile = user.employerprofile
         context['wallet_balance'] = employer_profile.wallets.balance
         return context
-
 
 
 class JobListView(ListView):
@@ -225,7 +218,6 @@ class JobDetailsView(DetailView):
         try:
             self.object = self.get_object()
         except Http404:
-            # redirect here
             raise Http404("Job doesn't exists")
         context = self.get_context_data(object=self.object)
         return self.render_to_response(context)
@@ -238,7 +230,6 @@ def Payments(request):
     currency = 'INR'
     amount = 20000
 
-    # Create a Razorpay Order
     razorpay_order = razorpay_client.order.create({'amount': 20000, 'currency': 'INR', 'payment_capture': 1})
     razorpay_order_id = razorpay_order['id']
     callback_url = request.build_absolute_uri('/') + "paymenthandler/"
@@ -246,7 +237,6 @@ def Payments(request):
     payment = Payment.objects.create(name=request.user, amount=amount, provider_order_id=razorpay_order_id)
     payment.save()
 
-    # we need to pass these details to frontend.
     context = {'razorpay_order_id': razorpay_order_id, 'razorpay_merchant_key': settings.KEY,
                'razorpay_amount': amount, 'currency': currency, 'callback_url': callback_url}
 
@@ -303,3 +293,26 @@ class WalletView(TemplateView):
         wallet = Wallet.objects.get(company__user=self.request.user)
         context['wallet'] = wallet
         return context
+
+
+class ViewContact(View):
+
+    def get(self, request, applicant_id=None):
+        applicant = Applicants.objects.get(id=applicant_id)
+
+        wallet = Wallet.objects.get(company__user=request.user)
+
+        transaction = Transaction.objects.filter(wallet=wallet).first()
+        print(transaction)
+        contact = applicant.applicant.employeeprofile.phone_number
+        print(contact)
+        print(transaction.access)
+        if transaction.access is None:
+            print(transaction.access)
+            if wallet.balance >= 5:
+                wallet.balance -= 5
+                wallet.save()
+                transaction = Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
+                return HttpResponse('{contact}')
+        return HttpResponse('insuffnnvn')
+

@@ -17,6 +17,7 @@ urlpatterns = [
     path('all-applicants/', ApplicantsListView.as_view(), name='all-applicant'),
     path('payment/', Payments, name='payment'),
     path('wallet/', WalletView.as_view(), name='wallet'),
+    path('contact/<int:applicant_id>/', ViewContact.as_view(), name='view-contact'),
 
     path('paymenthandler/', csrf_exempt(PaymentHandlerView.as_view()), name='paymenthandler'),
     path('mark-select/<int:applicant_id>/', ApplicantSelectionView.as_view(), name='select'),
