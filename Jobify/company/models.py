@@ -63,8 +63,8 @@ class Applicants(models.Model):
     is_selected = models.BooleanField(default=False)
     date_posted = models.DateTimeField(default=timezone.now)
 
-    def __str__(self):
-        return self.applicant
+    # def __str__(self):
+    #     return self.applicant
 
 
 PAYMENT_STATUS = (

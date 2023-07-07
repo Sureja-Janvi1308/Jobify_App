@@ -19,16 +19,16 @@
         </div>
     </section>
     <section>
+
         <div  class="container">
             <div   class="row">
-{% if wallet_balance != 0 %}
+
                 {% for applicant in applicants %}
 
 
                     <div class="col-lg-6">
-
                         <div  class="box applicant ">
-                            {% if wallet_balance >= 3 %}
+
                         <div class="blur">
 
                                 {% if applicant.is_selected %}
@@ -44,7 +44,7 @@
                                                 <span class="hidden-xs hidden-sm">Mark as </span>select
                                             </a><br>
                                         {% endif %}
-                            {% endif %}
+
 
                             </div>
 
@@ -53,12 +53,18 @@
                             <p><strong>Applied position: {{ applicant.job.title }}</strong></p>
                                 </div>
 
-                              <div class="blur">
-                                  <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" data-toggle="modal" data-target="#staticBackdrop">
- <i class="fa fa-envelope"></i> Contact
+
+{% if contact %}
+                                  <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" >
+ <i class="fa fa-envelope"></i>{{contact}}
+</a>
+{% else %}
+                                    <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" data-toggle="modal" data-target="#staticBackdrop">
+ <i class="fa fa-envelope"></i> contact
 </a>
 
-                              </div>
+{% endif %}
+
      <div class="blur">
                             <p>
                                 <span class="badge badge-info">Applied {{ applicant.date_posted.astimezone }}</span>
@@ -102,7 +108,7 @@
   </div>
 </div>
                 {% endfor %}
-                {% endif %}
+
                 {% if is_paginated %}
                     <div class="row">
                         <div class="col-md-12">
@@ -156,7 +162,7 @@
         var nameElement = document.getElementByClassName('blur');
          var deduct_balance = True
          {
-         
+
          }
     }
 </script>

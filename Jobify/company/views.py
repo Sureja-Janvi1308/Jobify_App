@@ -296,23 +296,61 @@ class WalletView(TemplateView):
 
 
 class ViewContact(View):
-
     def get(self, request, applicant_id=None):
-        applicant = Applicants.objects.get(id=applicant_id)
-
+        applicant = get_object_or_404(Applicants, id=applicant_id)
+        all = Applicants.objects.filter(job__user=request.user)
         wallet = Wallet.objects.get(company__user=request.user)
-
         transaction = Transaction.objects.filter(wallet=wallet).first()
-        print(transaction)
-        contact = applicant.applicant.employeeprofile.phone_number
-        print(contact)
-        print(transaction.access)
-        if transaction.access is None:
-            print(transaction.access)
-            if wallet.balance >= 5:
-                wallet.balance -= 5
-                wallet.save()
-                transaction = Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
-                return HttpResponse('{contact}')
-        return HttpResponse('insuffnnvn')
+        contact = None
+        unlock = Transaction.objects.filter(wallet__company__user=request.user.id).filter(access__contains=['contact'])
 
+        print(unlock)
+
+        if unlock:
+
+            contact = applicant.applicant.employeeprofile.phone_number
+
+            return render(request, 'Accounts/employer/all-applicants.html', {'contact': contact, 'applicants': all})
+        else:
+            print('ff')
+            if Transaction.objects.filter(access__isnull=True):
+                if wallet.balance >= 5:
+                    wallet.balance -= 5
+                    wallet.save()
+                    Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
+                    contact = applicant.applicant.employeeprofile.phone_number
+                    return render(request, 'Accounts/employer/all-applicants.html',
+                                  {'contact': contact, 'applicant': all})
+            return Http404
+
+        # contact = applicant.applicant.employeeprofile.phone_number
+        # if transaction.access is None:
+        #
+        #     if wallet.balance>=5:
+        #         wallet.balance -= 5
+        #         wallet.save()
+        #         Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
+        #         return render(request, 'Accounts/employer/all-applicants.html', {'contact':contact})
+        #     else:
+        #         return HttpResponse('insufficient balance')
+        # return HttpResponse('contact details')
+
+# class ViewContact(View):
+#
+#     def get(self, request, applicant_id=None):
+#         applicant = Applicants.objects.get(id=applicant_id)
+#
+#         wallet = Wallet.objects.get(company__user=request.user)
+#
+#         transaction = Transaction.objects.filter(wallet=wallet).first()
+#         print(transaction)
+#         contact = applicant.applicant.employeeprofile.phone_number
+#         print(contact)
+#         print(transaction.access)
+#         if transaction.access['contact'] is None:
+#             if wallet.balance >= 5:
+#                 wallet.balance -= 5
+#                 wallet.save()
+#                 transaction = Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
+#                 return HttpResponse('{contact}')
+#         return HttpResponse('insuffnnvn')
