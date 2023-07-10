@@ -386,7 +386,9 @@ class ApplyJobView(View):
 
 class GenerateResumeView(View):
     def get(self, request):
-        user = self.request.user
+        user = request.user
+        employer = request.user.employerprofile
+        print(employer)
 
         employee_profile = EmployeeProfile.objects.get(user=user)
         educations = Education.objects.filter(user=user)
@@ -395,6 +397,7 @@ class GenerateResumeView(View):
 
         template = get_template('Accounts/employee/resume.html')
         context = {
+            'employer_profile': employer_profile,
             'employee_profile': employee_profile,
             'educations': educations,
             'experiences': experiences,
