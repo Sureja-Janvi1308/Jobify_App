@@ -1,4 +1,6 @@
 from django.contrib import messages, auth
+from django.views.decorators.cache import never_cache
+
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -89,7 +91,6 @@ class LoginView(FormView):
     def form_valid(self, form):
         auth.login(self.request, form.get_user())
         return HttpResponseRedirect(self.get_success_url())
-
 
 
 class LogoutView(LoginRequiredMixin, RedirectView):

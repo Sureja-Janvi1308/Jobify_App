@@ -1,3 +1,4 @@
+from django.db.models import Q
 from decimal import Decimal
 
 import razorpay
@@ -11,14 +12,14 @@ from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView, DetailView
 
 from Jobify import settings
-from authentication.models import CustomUser
+from authentication.permission import user_is_employer
 from company.forms import EmployerProfileForm, CreateJobForm
 from company.models import EmployerProfile, Job, Applicants, Wallet, Payment, Transaction
-from company.signals import deduct_balance
 from company.tasks import send_selected_email_task
 
 
-# Create your views here.
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class EmployerProfileCreateView(CreateView):
     model = EmployerProfile
     form_class = EmployerProfileForm
@@ -40,6 +41,8 @@ class EmployerProfileCreateView(CreateView):
         return kwargs
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class EmployerProfileView(TemplateView):
     template_name = 'Accounts/employer/view_profile.html'
 
@@ -51,6 +54,8 @@ class EmployerProfileView(TemplateView):
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class EmployerProfileUpdateView(UpdateView):
     model = EmployerProfile
     fields = ['mobile', 'address_1', 'address_2', 'city', 'state',
@@ -68,6 +73,8 @@ class EmployerProfileUpdateView(UpdateView):
         return super(EmployerProfileUpdateView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class EmployerProfileDeleteView(DeleteView):
     model = EmployerProfile
     template_name = 'Accounts/employer/view_profile.html'
@@ -77,6 +84,8 @@ class EmployerProfileDeleteView(DeleteView):
         return self.request.user.employerprofile
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class DashboardView(ListView):
     model = Job
     template_name = 'Accounts/employer/dashboard.html'
@@ -86,6 +95,8 @@ class DashboardView(ListView):
         return self.model.objects.filter(user_id=self.request.user.id)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class JobCreateView(CreateView):
     model = Job
     form_class = CreateJobForm
@@ -109,6 +120,8 @@ class JobCreateView(CreateView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class JobActive(View):
 
     def get(self, request, job_id=None):
@@ -119,24 +132,45 @@ class JobActive(View):
         return redirect('dashboard')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class ApplicantSelectionView(View):
 
     def get(self, request, applicant_id=None):
         applicant = get_object_or_404(Applicants, id=applicant_id)
+        all = Applicants.objects.filter(job__user=request.user)
         wallet = Wallet.objects.get(company__user=request.user)
-        if wallet.balance >= 7:
 
+        transaction = Transaction.objects.filter(wallet=wallet).first()
 
-            applicant.is_selected = not applicant.is_selected
+        unlock = Transaction.objects.filter(wallet__company=request.user.id, access__contains=['select'])
+
+        if unlock:
+            applicant.is_selected = True
             applicant.save()
             if applicant.is_selected:
                 send_selected_email_task.delay(applicant.id)
-
-            return redirect('all-applicant')
+            context = {'applicant': all}
+            return redirect(reverse_lazy('all-applicant'), context)
         else:
-            HttpResponse('Insufficient balance!! Please do check your Wallet')
+
+            if Transaction.objects.filter(~Q(access__contains=['select'])):
+                if wallet.balance >= 7:
+                    wallet.balance -= 7
+                    wallet.save()
+                    Transaction.objects.create(wallet=wallet, amount=7, access=['select'])
+                    applicant.is_selected = True
+                    applicant.save()
+                    if applicant.is_selected:
+                        send_selected_email_task.delay(applicant.id)
+                        context = {'applicant': all}
+                        return redirect(reverse_lazy('all-applicant'), context)
+                return redirect('wallet')
+            return redirect('dashboard')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class JobUpdateView(UpdateView):
     model = Job
     template_name = 'Accounts/employer/job_edit.html'
@@ -152,6 +186,8 @@ class JobUpdateView(UpdateView):
         return super(JobUpdateView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class JobDeleteView(DeleteView):
     model = EmployerProfile
     template_name = 'Accounts/employer/dashboard.html'
@@ -162,6 +198,8 @@ class JobDeleteView(DeleteView):
         return obj
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class ApplicantPerJobView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/applicants.html'
@@ -179,6 +217,8 @@ class ApplicantPerJobView(ListView):
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class ApplicantsListView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/all-applicants.html'
@@ -190,12 +230,30 @@ class ApplicantsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
+        applicant = Applicants.objects.get(job__user=self.request.user.id)
+        user_id = Applicants.objects.filter(job__user=self.request.user.id).values_list('applicant__id', flat=True)[0]
 
-        employer_profile = user.employerprofile
-        context['wallet_balance'] = employer_profile.wallets.balance
+        unlock = Transaction.objects.filter(wallet__company__user=self.request.user.id).filter(
+            Q(access__contains=['contact']) | Q(access__contains=['select']) | Q(access__contains=['resume']))
+        contact = None
+        applicant.is_selected = False
+        if unlock:
+            transaction = Transaction.objects.first()
+
+            select = applicant.is_selected
+            # resume = applicant.applicant.employeeprofile.user
+            #
+            contact = applicant.applicant.employeeprofile.phone_number
+            context['applicant'] = applicant
+            context['transaction'] = transaction
+            context['contact'] = contact
+            context['select'] = select
+            context['user_id'] = user_id
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class JobListView(ListView):
     model = Job
     template_name = 'Accounts/employee/jobs.html'
@@ -224,7 +282,8 @@ class JobDetailsView(DetailView):
         return self.render_to_response(context)
 
 
-## payment view
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 def Payments(request):
     razorpay_client = razorpay.Client(
         auth=(settings.KEY, settings.SECRET))
@@ -244,6 +303,8 @@ def Payments(request):
     return render(request, 'Accounts/employer/payment_1.html', context=context)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class PaymentHandlerView(View):
     def verify_signature(self, response_data):
         client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
@@ -273,7 +334,7 @@ class PaymentHandlerView(View):
             order.save()
             messages.success(request, f'Your payment done successfully')
 
-            wallet.balance += Decimal(order.amount)
+            wallet.balance += Decimal(order.amount / 100)
             wallet.save()
             messages.success(request, f'Your amount is added to wallet')
 
@@ -286,6 +347,8 @@ class PaymentHandlerView(View):
             return redirect('wallet')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class WalletView(TemplateView):
     template_name = 'Accounts/employer/wallet.html'
 
@@ -296,28 +359,30 @@ class WalletView(TemplateView):
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employer, name='dispatch')
 class ViewContact(View):
     def get(self, request, applicant_id=None):
         applicant = get_object_or_404(Applicants, id=applicant_id)
         all = Applicants.objects.filter(job__user=request.user)
+        print(all)
         wallet = Wallet.objects.get(company__user=request.user)
-        transaction = Transaction.objects.filter(wallet=wallet).first()
+
         contact = None
-        unlock = Transaction.objects.filter(wallet__company__user=request.user.id).filter(access__contains=['contact'])
+        unlock = Transaction.objects.filter(access__contains=['contact'])
         if unlock:
 
             contact = applicant.applicant.employeeprofile.phone_number
 
             return render(request, 'Accounts/employer/all-applicants.html', {'contact': contact, 'applicants': all})
         else:
-            print('ff')
-            if Transaction.objects.filter(access__isnull=True):
+
+            if Transaction.objects.filter(~Q(access__contains=['contact'])):
                 if wallet.balance >= 5:
                     wallet.balance -= 5
                     wallet.save()
                     Transaction.objects.create(wallet=wallet, amount=5, access=['contact'])
                     contact = applicant.applicant.employeeprofile.phone_number
                     return render(request, 'Accounts/employer/all-applicants.html',
-                                  {'contact': contact, 'applicant': all})
-            return Http404
-
+                                  {'contact': contact, 'applicants': all})
+            return redirect('all-applicants')

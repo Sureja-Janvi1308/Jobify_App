@@ -11,14 +11,18 @@
     <title>resume preview </title>
   </head>
   <body>
+
+
     <h1 class="text-center">Resume Preview</h1>
     <div>
   {{ rendered_template|safe }}
 </div>
+    {% if request.user.is_employee %}
        <div class="text-center">
                     <a href="{% url 'resume-download' %}" type="button" class="btn btn-info">Download Resume</a>
 
                 </div>
+    {% endif %}
 
     <!-- Optional JavaScript; choose one of the two! -->
 

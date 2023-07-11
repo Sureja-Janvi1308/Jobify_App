@@ -29,20 +29,3 @@ def create_wallet(sender, instance, created, **kwargs):
         Wallet.objects.create(company=instance, balance=0.00)
 
 
-@receiver(post_save, sender=Applicants)
-def deduct_balance(sender, instance, created, **kwargs):
-    if not created and instance.is_selected:
-        wallet = Wallet.objects.get(company=instance.job.user.employerprofile)
-        if wallet.balance >= 3:
-            wallet.balance -= 3
-            wallet.save()
-    # if instance.view_resume:
-    #     wallet = Wallet.objects.get(user=instance.job.user)
-    #     if wallet.balance >= 5:
-    #         wallet.balance -= 5
-    #         wallet.save()
-    # if instance.EmployeeProfile:
-    #     wallet = Wallet.objects.get(user=instance.job.user)
-    #     if wallet.balance >= 10:
-    #         wallet.balance -= 10
-    #         wallet.save()

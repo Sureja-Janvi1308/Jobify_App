@@ -15,14 +15,17 @@ from django.views import View
 from django.views.generic import UpdateView, CreateView, DeleteView, DetailView, ListView, FormView, TemplateView
 from django.views.generic.edit import UpdateView
 from django.forms import modelformset_factory
-from authentication.models import CustomUser
+
+from authentication.permission import user_is_employee, profile_created
 from company.forms import ApplyJobForm, AppliedJobForm
-from company.models import Job, EmployerProfile, Applicants
+from company.models import Job, EmployerProfile, Applicants, Wallet, Transaction
 from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, ExperienceFormSet, \
     EducationFormSet
 from employee.models import EmployeeProfile, Education, Experience, Skill
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
 class HomeView(ListView):
     model = Job
     template_name = 'Accounts/employee/home.html'
@@ -37,6 +40,8 @@ class HomeView(ListView):
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
 class SearchView(ListView):
     model = Job
     template_name = 'Accounts/employee/search.html'
@@ -52,15 +57,14 @@ class SearchView(ListView):
             jobs = Job.objects.filter(title__icontains=querys).prefetch_related('user__employerprofile')
             queryset = list(employer_profile) + list(jobs)
             queryset = list({obj.id: obj for obj in queryset}.values())
-
-            # queryset = EmployerProfile.objects.filter(Q(city__icontains=query)).prefetch_related('user__job').filter(Q(user__job__title__icontains=querys)).distinct()
-
         else:
             queryset = EmployerProfile.objects.none()
 
         return queryset
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
 class EmployeeProfileCreateView(CreateView):
     model = EmployeeProfile
     form_class = EmployeeProfileForm
@@ -81,10 +85,15 @@ class EmployeeProfileCreateView(CreateView):
         return kwargs
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployeeProfileView(TemplateView):
     template_name = 'Accounts/employee/view_profile.html'
 
     def get_context_data(self, **kwargs):
+        user_id = Applicants.objects.filter(job__user=self.request.user.id).only('applicant__id')
+
         context = super().get_context_data(**kwargs)
         employee_profile = EmployeeProfile.objects.get(user=self.request.user)
         context['employee_profile'] = employee_profile
@@ -94,10 +103,14 @@ class EmployeeProfileView(TemplateView):
         context['experiences'] = experiences
         skills = Skill.objects.filter(user=self.request.user)
         context['skills'] = skills
+        context['user_id'] = user_id
 
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployeeProfileUpdateView(UpdateView):
     model = EmployeeProfile
     fields = ['phone_number', 'address_1', 'address_2', 'city', 'state',
@@ -114,6 +127,9 @@ class EmployeeProfileUpdateView(UpdateView):
         return super(EmployeeProfileUpdateView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployeeProfileDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
@@ -126,6 +142,9 @@ class EmployeeProfileDeleteView(DeleteView):
         return super().form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EducationCreateView(CreateView):
     model = Education
     form_class = EducationForm
@@ -160,6 +179,9 @@ class EducationCreateView(CreateView):
             return super().form_invalid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EducationUpdateView(View):
 
     def get(self, request):
@@ -184,6 +206,9 @@ class EducationUpdateView(View):
         return redirect('employee-profile-view')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EducationDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
@@ -197,6 +222,9 @@ class EducationDeleteView(DeleteView):
         return super(EducationDeleteView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ExperienceCreateView(CreateView):
     model = Experience
     form_class = ExperienceForm
@@ -232,6 +260,9 @@ class ExperienceCreateView(CreateView):
             return super().form_invalid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ExperienceUpdateView(View):
 
     def get(self, request):
@@ -256,6 +287,9 @@ class ExperienceUpdateView(View):
         return redirect('employee-profile-view')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ExperienceDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
@@ -269,6 +303,9 @@ class ExperienceDeleteView(DeleteView):
         return super(ExperienceDeleteView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class SkillCreateView(CreateView):
     model = Skill
     form_class = SkillForm
@@ -301,6 +338,9 @@ class SkillCreateView(CreateView):
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class SkillUpdateView(View):
     def get(self, request):
         skills = Skill.objects.filter(user=self.request.user)
@@ -324,6 +364,9 @@ class SkillUpdateView(View):
         return redirect('employee-profile-view')
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class SkillDeleteView(DeleteView):
     template_name = 'Accounts/employee/view_profile.html'
     success_url = reverse_lazy('Homepage')
@@ -337,6 +380,9 @@ class SkillDeleteView(DeleteView):
         return super(SkillDeleteView, self).form_valid(form)
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class JobDetailView(DetailView):
     model = Job
     template_name = 'Accounts/employee/detail.html'
@@ -359,14 +405,17 @@ class JobDetailView(DetailView):
         return context
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ApplyJobView(View):
     def post(self, request, *args, **kwargs):
-        user = request.user
-        try:
-            employeeprofile = user.employeeprofile
-        except EmployeeProfile.DoesNotExist:
-            messages.error(request, f'Please Create Employee Profile First')
-            return render(self.request, 'error.html')
+        # user = request.user
+        # try:
+        #     employeeprofile = user.employeeprofile
+        # except EmployeeProfile.DoesNotExist:
+        #     messages.error(request, f'Please Create Employee Profile First')
+        #     return render(self.request, 'error.html')
 
         job = get_object_or_404(Job, pk=self.kwargs['job_id'])
 
@@ -384,30 +433,72 @@ class ApplyJobView(View):
         return HttpResponseRedirect(reverse_lazy('Homepage'))
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 class GenerateResumeView(View):
     def get(self, request):
-        user = request.user
-        employer = request.user.employerprofile
-        print(employer)
+        if request.user.is_employer:
 
-        employee_profile = EmployeeProfile.objects.get(user=user)
-        educations = Education.objects.filter(user=user)
-        experiences = Experience.objects.filter(user=user)
-        skills = Skill.objects.filter(user=user)
+            user = request.GET.get('user_id')
 
-        template = get_template('Accounts/employee/resume.html')
-        context = {
-            'employer_profile': employer_profile,
-            'employee_profile': employee_profile,
-            'educations': educations,
-            'experiences': experiences,
-            'skills': skills
+            employee = EmployeeProfile.objects.get(user=user)
+            educations = Education.objects.filter(user=user)
+            experiences = Experience.objects.filter(user=user)
+            skills = Skill.objects.filter(user=user)
 
-        }
-        rendered_template = template.render(context)
-        return render(request, 'Accounts/employee/resume_preview.html', {'rendered_template': rendered_template})
+            template = get_template('Accounts/employee/resume.html')
+
+            all = Applicants.objects.filter(job__user=request.user)
+            wallet = Wallet.objects.get(company__user=request.user)
+
+            transaction = Transaction.objects.filter(wallet=wallet).first()
+
+            context = {
+                'employee_profile': employee,
+                'educations': educations,
+                'experiences': experiences,
+                'skills': skills,
+                'applicant': all
+
+            }
+            rendered_template = template.render(context)
+
+            if Transaction.objects.filter(access__contains=['resume']):
+
+                return render(request, 'Accounts/employee/resume_preview.html',
+                              {'rendered_template': rendered_template})
+            else:
+                if Transaction.objects.filter(~Q(access__contains=['resume'])):
+                    if wallet.balance >= 10:
+                        wallet.balance -= 10
+                        wallet.save()
+                        Transaction.objects.create(wallet=wallet, amount=10, access=['resume'])
+                        return render(request, 'Accounts/employee/resume_preview.html',
+                                      {'rendered_template': rendered_template})
+
+                    return redirect('wallet')
+                return redirect('dashboard')
+        else:
+            user = request.user
+
+            employee = EmployeeProfile.objects.get(user=user)
+            educations = Education.objects.filter(user=user)
+            experiences = Experience.objects.filter(user=user)
+            skills = Skill.objects.filter(user=user)
+
+            template = get_template('Accounts/employee/resume.html')
+            context = {
+                'employee_profile': employee,
+                'educations': educations,
+                'experiences': experiences,
+                'skills': skills
+
+            }
+            rendered_template = template.render(context)
+            return render(request, 'Accounts/employee/resume_preview.html', {'rendered_template': rendered_template})
 
 
+@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(user_is_employee, name='dispatch')
 class DownloadResumeView(View):
     def get(self, request):
         user = self.request.user

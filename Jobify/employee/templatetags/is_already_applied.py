@@ -12,11 +12,3 @@ def is_already_applied(job, applicant):
     else:
         return False
 
-
-@register.simple_tag(name='has_sufficient_balance')
-def has_sufficient_balance(user):
-    try:
-        wallet = Wallet.objects.get(company__user=user)
-        return wallet.balance >= 5
-    except Wallet.DoesNotExist:
-        return False
