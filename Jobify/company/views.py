@@ -12,7 +12,7 @@ from django.views import View
 from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView, ListView, DetailView
 
 from Jobify import settings
-from authentication.permission import user_is_employer
+from authentication.permission import user_is_employer, user_is_employee, profile_created
 from company.forms import EmployerProfileForm, CreateJobForm
 from company.models import EmployerProfile, Job, Applicants, Wallet, Payment, Transaction
 from company.tasks import send_selected_email_task
@@ -43,6 +43,7 @@ class EmployerProfileCreateView(CreateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployerProfileView(TemplateView):
     template_name = 'Accounts/employer/view_profile.html'
 
@@ -56,6 +57,7 @@ class EmployerProfileView(TemplateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployerProfileUpdateView(UpdateView):
     model = EmployerProfile
     fields = ['mobile', 'address_1', 'address_2', 'city', 'state',
@@ -75,6 +77,7 @@ class EmployerProfileUpdateView(UpdateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class EmployerProfileDeleteView(DeleteView):
     model = EmployerProfile
     template_name = 'Accounts/employer/view_profile.html'
@@ -97,6 +100,7 @@ class DashboardView(ListView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class JobCreateView(CreateView):
     model = Job
     form_class = CreateJobForm
@@ -122,6 +126,7 @@ class JobCreateView(CreateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class JobActive(View):
 
     def get(self, request, job_id=None):
@@ -134,6 +139,7 @@ class JobActive(View):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ApplicantSelectionView(View):
 
     def get(self, request, applicant_id=None):
@@ -171,6 +177,7 @@ class ApplicantSelectionView(View):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class JobUpdateView(UpdateView):
     model = Job
     template_name = 'Accounts/employer/job_edit.html'
@@ -188,6 +195,7 @@ class JobUpdateView(UpdateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class JobDeleteView(DeleteView):
     model = EmployerProfile
     template_name = 'Accounts/employer/dashboard.html'
@@ -200,6 +208,7 @@ class JobDeleteView(DeleteView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ApplicantPerJobView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/applicants.html'
@@ -207,8 +216,6 @@ class ApplicantPerJobView(ListView):
     paginate_by = 1
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated:
-            return redirect('login')
         return Applicants.objects.filter(job_id=self.kwargs['job_id']).order_by('id')
 
     def get_context_data(self, **kwargs):
@@ -219,6 +226,7 @@ class ApplicantPerJobView(ListView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ApplicantsListView(ListView):
     model = Applicants
     template_name = 'Accounts/employer/all-applicants.html'
@@ -230,26 +238,32 @@ class ApplicantsListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.request.user
-        applicant = Applicants.objects.get(job__user=self.request.user.id)
+        applicant = Applicants.objects.filter(job__user=self.request.user.id)
+        print(applicant)
+
         user_id = Applicants.objects.filter(job__user=self.request.user.id).values_list('applicant__id', flat=True)[0]
 
         unlock = Transaction.objects.filter(wallet__company__user=self.request.user.id).filter(
             Q(access__contains=['contact']) | Q(access__contains=['select']) | Q(access__contains=['resume']))
-        contact = None
+        contacts = []
         applicant.is_selected = False
-        if unlock:
-            transaction = Transaction.objects.first()
+        for app in applicant:
+            if unlock:
+                transaction = Transaction.objects.first()
+                select = app.is_selected
+                applicant_profile = app.applicant
+                if applicant_profile:
+                    contact = applicant_profile.employeeprofile.phone_number
+                    contacts. append(contact)
+                    print(contacts)
+                lst = zip(applicant, contacts)
+                context['lst'] =lst
 
-            select = applicant.is_selected
-            # resume = applicant.applicant.employeeprofile.user
-            #
-            contact = applicant.applicant.employeeprofile.phone_number
-            context['applicant'] = applicant
-            context['transaction'] = transaction
-            context['contact'] = contact
-            context['select'] = select
-            context['user_id'] = user_id
-        return context
+                context['transaction'] = transaction
+                context['select'] = select
+                context['user_id'] = user_id
+
+                return context
 
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
@@ -284,6 +298,7 @@ class JobDetailsView(DetailView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 def Payments(request):
     razorpay_client = razorpay.Client(
         auth=(settings.KEY, settings.SECRET))
@@ -305,6 +320,7 @@ def Payments(request):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class PaymentHandlerView(View):
     def verify_signature(self, response_data):
         client = razorpay.Client(auth=(settings.KEY, settings.SECRET))
@@ -349,6 +365,7 @@ class PaymentHandlerView(View):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class WalletView(TemplateView):
     template_name = 'Accounts/employer/wallet.html'
 
@@ -361,6 +378,7 @@ class WalletView(TemplateView):
 
 @method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
 @method_decorator(user_is_employer, name='dispatch')
+@method_decorator(profile_created, name='dispatch')
 class ViewContact(View):
     def get(self, request, applicant_id=None):
         applicant = get_object_or_404(Applicants, id=applicant_id)

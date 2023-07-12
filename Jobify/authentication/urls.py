@@ -7,6 +7,7 @@ urlpatterns = [
     path('employee/register', RegisterEmployeeView.as_view(), name='employee-register'),
     path('employer/register', RegisterEmployerView.as_view(), name='employer-register'),
     path('login/', LoginView.as_view(), name='loginPage'),
+    path('contact/', ContactView.as_view(), name='contact'),
     path('logout/', never_cache(LogoutView.as_view()), name='logout'),
     path('password_reset/', auth_views.PasswordResetView.as_view(template_name="registration/password_reset_form.html"),
          name='password_reset'),

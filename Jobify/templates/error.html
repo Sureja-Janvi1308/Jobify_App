@@ -25,7 +25,11 @@
 
 		<p>the page you are looking for not available!</p>
 
-		<a href="{% url 'Homepage' %}" class="link_404">Go to Home</a>
+   {% if request.user.is_employee %}
+			<a href="{% url 'Homepage' %}" class="link_404">Go to Home</a>
+			{% else %}
+					<a href="{% url 'dashboard' %}" class="link_404">Go to Home</a>
+{% endif %}
 	</div>
 		</div>
 		</div>

@@ -24,8 +24,6 @@ from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, S
 from employee.models import EmployeeProfile, Education, Experience, Skill
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
-@method_decorator(user_is_employee, name='dispatch')
 class HomeView(ListView):
     model = Job
     template_name = 'Accounts/employee/home.html'

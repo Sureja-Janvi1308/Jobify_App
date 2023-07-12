@@ -161,3 +161,13 @@ class UserLoginForm(forms.Form):
 
     def get_user(self):
         return self.user
+
+
+class EnquiryForm(forms.Form):
+    message = forms.CharField(widget=forms.Textarea)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['message'].required = True
+        self.fields['message'].label = 'Message'
