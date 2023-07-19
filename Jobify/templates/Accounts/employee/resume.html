@@ -167,12 +167,12 @@ body {
   <div class="header">
       <div class="d-flex justify-content-end" ><img src="{{ employee_profile.profile_pic.url }}"></div>
     <div class="full-name">
-      <span class="first-name">{{ employee_profile.first_name }}</span>
-      <span class="last-name">{{ employee_profile.last_name }}</span>
+      <span class="first-name">{{ employee_profile.user.first_name }}</span>
+      <span class="last-name">{{ employee_profile.user.last_name }}</span>
     </div>
     <div class="contact-info">
       <span class="email">Email: </span>
-      <span class="email-val">{{ employee_profile.email }}</span>
+      <span class="email-val">{{ employee_profile.user.email }}</span>
       <span class="separator"></span>
       <span class="phone">Phone: </span>
       <span class="phone-val">{{ employee_profile.phone_number }}</span>

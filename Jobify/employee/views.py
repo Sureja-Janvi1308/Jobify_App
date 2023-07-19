@@ -19,8 +19,9 @@ from django.forms import modelformset_factory
 from authentication.permission import user_is_employee, profile_created
 from company.forms import ApplyJobForm, AppliedJobForm
 from company.models import Job, EmployerProfile, Applicants, Wallet, Transaction
-from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, ExperienceFormSet, \
-    EducationFormSet
+from employee.forms import EmployeeProfileForm, EducationForm, ExperienceForm, SkillForm, EducationFormSet, \
+    ExperienceFormSet
+
 from employee.models import EmployeeProfile, Education, Experience, Skill
 
 
@@ -38,7 +39,7 @@ class HomeView(ListView):
         return context
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 class SearchView(ListView):
     model = Job
@@ -61,7 +62,7 @@ class SearchView(ListView):
         return queryset
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 class EmployeeProfileCreateView(CreateView):
     model = EmployeeProfile
@@ -73,17 +74,9 @@ class EmployeeProfileCreateView(CreateView):
         form.instance.user = self.request.user
         return super().form_valid(form)
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs['initial'] = {
-            'first_name': self.request.user.first_name,
-            'last_name': self.request.user.last_name,
-            'email': self.request.user.email
-        }
-        return kwargs
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EmployeeProfileView(TemplateView):
@@ -106,7 +99,7 @@ class EmployeeProfileView(TemplateView):
         return context
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EmployeeProfileUpdateView(UpdateView):
@@ -125,7 +118,7 @@ class EmployeeProfileUpdateView(UpdateView):
         return super(EmployeeProfileUpdateView, self).form_valid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EmployeeProfileDeleteView(DeleteView):
@@ -140,7 +133,7 @@ class EmployeeProfileDeleteView(DeleteView):
         return super().form_valid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EducationCreateView(CreateView):
@@ -177,7 +170,7 @@ class EducationCreateView(CreateView):
             return super().form_invalid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EducationUpdateView(View):
@@ -185,26 +178,31 @@ class EducationUpdateView(View):
     def get(self, request):
         education = Education.objects.filter(user=self.request.user)
         if len(education) > 0:
-            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
+            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0, can_delete=True)
         else:
-            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=1)
+            EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=1, can_delete=True)
         context = {'formset': EducationFormSet}
         return render(request, 'Accounts/employee/update_education.html', context)
 
     def post(self, request):
         education = Education.objects.filter(user=self.request.user)
-        EducationFormSet = modelformset_factory(Education, form=EducationForm)
+        EducationFormSet = modelformset_factory(Education, form=EducationForm, can_delete=True)
         education_formset = EducationFormSet(request.POST)
         if education_formset.is_valid():
             for education_form in education_formset:
                 data = education_form.save(commit=False)
                 data.user = request.user
                 data.save()
+            deleted_forms = education_formset.deleted_forms
+            for form in deleted_forms:
+                if form.instance.pk:
+                    form.instance.delete()
+
         messages.success(request, f'Education Profile Updated Successfully')
         return redirect('employee-profile-view')
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class EducationDeleteView(DeleteView):
@@ -220,7 +218,7 @@ class EducationDeleteView(DeleteView):
         return super(EducationDeleteView, self).form_valid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class ExperienceCreateView(CreateView):
@@ -258,7 +256,7 @@ class ExperienceCreateView(CreateView):
             return super().form_invalid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class ExperienceUpdateView(View):
@@ -266,26 +264,30 @@ class ExperienceUpdateView(View):
     def get(self, request):
         experience = Experience.objects.filter(user=self.request.user)
         if len(experience) > 0:
-            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0)
+            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=0, can_delete=True)
         else:
-            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=1)
+            ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, extra=1, can_delete=True)
         context = {'formset': ExperienceFormSet}
         return render(request, 'Accounts/employee/update_experience.html', context)
 
     def post(self, request):
         experience = Experience.objects.filter(user=self.request.user)
-        ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm)
+        ExperienceFormSet = modelformset_factory(Experience, form=ExperienceForm, can_delete=True)
         experience_formset = ExperienceFormSet(request.POST)
         if experience_formset.is_valid():
             for experience_form in experience_formset:
                 data = experience_form.save(commit=False)
                 data.user = request.user
                 data.save()
+            deleted_forms = experience_formset.deleted_forms
+            for form in deleted_forms:
+                if form.instance.pk:
+                    form.instance.delete()
         messages.success(request, f'Experience Profile Updated Successfully')
         return redirect('employee-profile-view')
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class ExperienceDeleteView(DeleteView):
@@ -301,7 +303,7 @@ class ExperienceDeleteView(DeleteView):
         return super(ExperienceDeleteView, self).form_valid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class SkillCreateView(CreateView):
@@ -336,33 +338,37 @@ class SkillCreateView(CreateView):
 SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class SkillUpdateView(View):
     def get(self, request):
         skills = Skill.objects.filter(user=self.request.user)
         if len(skills) > 0:
-            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0)
+            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=0, can_delete=True)
         else:
-            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=1)
+            SkillFormSet = modelformset_factory(Skill, form=SkillForm, extra=1, can_delete=True)
         context = {'formset': SkillFormSet}
         return render(request, 'Accounts/employee/update_skills.html', context)
 
     def post(self, request):
         skills = Skill.objects.filter(user=self.request.user)
-        SkillFormSet = modelformset_factory(Skill, form=SkillForm)
+        SkillFormSet = modelformset_factory(Skill, form=SkillForm, can_delete=True)
         skill_formset = SkillFormSet(request.POST)
         if skill_formset.is_valid():
             for skill_form in skill_formset:
                 data = skill_form.save(commit=False)
                 data.user = request.user
                 data.save()
+            deleted_forms = skill_formset.deleted_forms
+            for form in deleted_forms:
+                if form.instance.pk:
+                    form.instance.delete()
         messages.success(request, f'Skills Profile Updated Successfully')
         return redirect('employee-profile-view')
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class SkillDeleteView(DeleteView):
@@ -378,7 +384,7 @@ class SkillDeleteView(DeleteView):
         return super(SkillDeleteView, self).form_valid(form)
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class JobDetailView(DetailView):
@@ -403,17 +409,11 @@ class JobDetailView(DetailView):
         return context
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 @method_decorator(profile_created, name='dispatch')
 class ApplyJobView(View):
     def post(self, request, *args, **kwargs):
-        # user = request.user
-        # try:
-        #     employeeprofile = user.employeeprofile
-        # except EmployeeProfile.DoesNotExist:
-        #     messages.error(request, f'Please Create Employee Profile First')
-        #     return render(self.request, 'error.html')
 
         job = get_object_or_404(Job, pk=self.kwargs['job_id'])
 
@@ -431,7 +431,7 @@ class ApplyJobView(View):
         return HttpResponseRedirect(reverse_lazy('Homepage'))
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 class GenerateResumeView(View):
     def get(self, request):
         if request.user.is_employer:
@@ -495,7 +495,7 @@ class GenerateResumeView(View):
             return render(request, 'Accounts/employee/resume_preview.html', {'rendered_template': rendered_template})
 
 
-@method_decorator(login_required(login_url=reverse_lazy('login')), name='dispatch')
+@method_decorator(login_required(login_url=reverse_lazy('loginPage')), name='dispatch')
 @method_decorator(user_is_employee, name='dispatch')
 class DownloadResumeView(View):
     def get(self, request):

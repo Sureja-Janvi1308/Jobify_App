@@ -14,9 +14,6 @@ from Jobify import settings
 class EmployerProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, related_name='employerprofile', null=True,
                                 on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100, null=True, blank=False)
-    last_name = models.CharField(max_length=100, null=True, blank=False)
-    email = models.EmailField(default='', unique=True)
     company_name = models.CharField(max_length=100, null=True, blank=False)
     address_1 = models.CharField(_("address"), max_length=128)
     address_2 = models.CharField(_("address contd"), max_length=128, blank=True)

@@ -13,11 +13,9 @@ from company.models import Job
 # Create your models here.
 
 
+
 class EmployeeProfile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL,related_name='employeeprofile',  null=True, on_delete=models.CASCADE)
-    first_name = models.CharField(max_length=100, null=True, blank=False)
-    last_name = models.CharField(max_length=100, null=True, blank=False)
-    email = models.EmailField(default='')
     phone_number = models.CharField(max_length=17, blank=True)
     address_1 = models.CharField(_("address"), max_length=128)
     address_2 = models.CharField(_("address contd"), max_length=128, blank=True)

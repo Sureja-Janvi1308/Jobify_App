@@ -28,18 +28,6 @@ class EmployerProfileForm(forms.ModelForm):
             raise forms.ValidationError('Not a Valid Phone Number')
         return mobile
 
-    def clean_first_name(self):
-        first_name = self.cleaned_data['first_name']
-        if re.search(r'\d', first_name) or re.search(r'\W', first_name):
-            raise forms.ValidationError('First name should not contain any number or special characters')
-        return first_name
-
-    def clean_last_name(self):
-        last_name = self.cleaned_data['last_name']
-        if re.search(r'\d', last_name) or re.search(r'\W', last_name):
-            raise forms.ValidationError('Last name should not contain any number or special characters')
-        return last_name
-
     def clean_company_name(self):
         company_name = self.cleaned_data['company_name']
         if re.search(r'\d', company_name) or re.search(r'\W', company_name):
@@ -52,17 +40,6 @@ class EmployerProfileForm(forms.ModelForm):
         if address_1 and address_2 and address_1.lower() == address_2.lower():
             raise forms.ValidationError('Address 1 and Address 2 should not be the same ')
         return address_2
-
-    # def clean_website(self):
-    #     website = self.cleaned_data['website']
-    #     if not re.search(r'^https?://\w+\./w+$', website):
-    #         raise forms.ValidationError('Invalid Website URL')
-    #     return website
-
-    def set_initial_user_data(self, user):
-        self.fields['first_name'].initial = user.first_name
-        self.fields['last_name'].initial = user.last_name
-        self.fields['email'].initial = user.email
 
 
 class CreateJobForm(forms.ModelForm):
@@ -78,16 +55,13 @@ class CreateJobForm(forms.ModelForm):
         self.helper.add_input(Submit('submit', 'Save'))
 
 
-
-
 class ApplyJobForm(forms.ModelForm):
     class Meta:
         model = Applicants
-        fields = ('job', )
+        fields = ('job',)
 
 
 class AppliedJobForm(forms.ModelForm):
-
     class Meta:
         model = Applied_Jobs
-        fields = ('job', )
+        fields = ('job',)
