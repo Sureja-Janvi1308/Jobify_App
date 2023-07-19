@@ -22,7 +22,7 @@ class EmployeeProfile(models.Model):
     address_1 = models.CharField(_("address"), max_length=128)
     address_2 = models.CharField(_("address contd"), max_length=128, blank=True)
     city = models.CharField(_("city"), max_length=64)
-    state = models.CharField(_("state"), )
+    state = models.CharField(_("state"), max_length=100)
     pincode = models.CharField(_("zip code"), max_length=6)
     country = CountryField()
     profile_pic = models.ImageField(upload_to='images/', max_length=100, default='')

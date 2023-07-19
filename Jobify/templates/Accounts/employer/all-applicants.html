@@ -4,42 +4,173 @@
 {% endblock %}
 {% load static %}
 
+
 {% block content %}
 
-    <section class="bg-light-gray">
+<section class="bg-light-gray">
         <div class="container">
             <div class="row">
                 <div class="col-lg-8 mx-auto">
+
                     <h1 class="heading">All applicants who applied for your position</h1>
+
                 </div>
             </div>
         </div>
     </section>
     <section>
-        <div class="container">
-            <div class="row">
-                {% for applicant in applicants %}
+
+        <div  class="container">
+            <div   class="row">
+
+
+                {% for applicant in lst %}
+
+
                     <div class="col-lg-6">
-                        <div class="box applicant">
-                            <h4>{{ applicant.user.get_full_name }}</h4>
+                        <div  class="box applicant ">
+
+                        <div class="blur">
+
+
+
+{% if applicant.is_selected %}
+                                            <a href=""
+                                               class="btn btn-outline-white-secondary">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">selected</span>
+                                            </a><br>
+{% else %}
+                                            <a href=""
+                                               class="btn btn-outline-white-secondary " data-toggle="modal" data-target="#staticBackdrop1">
+                                                <i class="fa fa-check-circle-o"></i>
+                                                <span class="hidden-xs hidden-sm">Mark as </span>select
+                                            </a><br>
+
+                            {% endif %}
+
+
+
+
+
+
+                            </div>
+
+                            <div class="blur">
+                            <h4 >{{ applicant.applicant.get_full_name }}</h4>
                             <p><strong>Applied position: {{ applicant.job.title }}</strong></p>
-                            <a href="#" data-toggle="modal" data-target="#contact-modal"
-                               class="btn btn-outline-white-secondary btn-sm">
-                                <i class="fa fa-envelope"></i>Contact
-                            </a>
+                                </div>
+
+
+
+                                  <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" >
+ <i class="fa fa-envelope"></i>{{contact}}
+</a>
+                                <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" data-toggle="modal" data-target="#staticBackdrop">
+ <i class="fa fa-envelope"></i> contact
+</a>
+
+
+
+     <div class="blur">
                             <p>
                                 <span class="badge badge-info">Applied {{ applicant.date_posted.astimezone }}</span>
                             </p>
+
                             <div class="d-flex justify-content-between">
                                 <p class="intro"></p>
                                 <div class="image">
-                                    <img src="{% static 'img/avatar.png' %}" alt=""
+                                    <img src="{{ applicant.applicant.employeeprofile.profile_pic.url }}" alt=""
                                          class="img-fluid rounded-circle">
                                 </div>
+
+
                             </div>
+                                </div>
+
+                            {% if transaction.access == 'resume' %}
+                            <div class="blur">
+                            <a href="{% url 'resume-preview' %}?user_id={{user_id}}"> view resume</a>
+                            </div>
+
+                              {% endif %}
+
+
+                             <div class="blur">
+                            <a href="" data-toggle="modal" data-target="#staticBackdrop2"> view resume</a>
+                            </div>
+
+
+
+
+
                         </div>
                     </div>
+                <!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Wallet Balance </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        To view Contact of a person money gets deducted from your wallet
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a href="{% url 'view-contact' applicant.id %}" type="button" class="btn btn-primary">Sure, I understood </a>
+
+      </div>
+    </div>
+  </div>
+</div>
+                                <!-- Modal -->
+<div class="modal fade" id="staticBackdrop1" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel1">Wallet Balance </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        To select an applicant money gets deducted from your wallet
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a href="{% url 'select' applicant_id=applicant.id %}" type="button" class="btn btn-primary">Sure, I understood </a>
+
+      </div>
+    </div>
+  </div>
+</div>
+                                <!-- Modal -->
+<div class="modal fade" id="staticBackdrop2" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel2" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel2">Wallet Balance </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        To view resume of a person money gets deducted from your wallet
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <a href="{% url 'resume-preview' %}?user_id={{user_id}}" type="button" class="btn btn-primary">Sure, I understood </a>
+
+      </div>
+    </div>
+  </div>
+</div>
                 {% endfor %}
+
                 {% if is_paginated %}
                     <div class="row">
                         <div class="col-md-12">
@@ -81,10 +212,20 @@
                         </div>
                     </div>
                 {% else %}
-                    <h3>You are end</h3>
+
                 {% endif %}
+
             </div>
         </div>
     </section>
 
+<script>
+    window.addEventListener('DOMContentLoaded', function(){
+        var nameElement = document.getElementByClassName('blur');
+         var deduct_balance = True
+         {
+
+         }
+    }
+</script>
 {% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Wallet {% endblock %}
+{% block content %}
+{% if wallet %}
+ <div class="box">
+            <h3 class="heading">Company Name : {{ user.get_full_name }}</h3>
+            <p class="lead">Balance : {{ wallet.balance }}</p>
+   <div class="text-center">
+                    <a href="{% url 'payment' %}" type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Make payment
+                    </a>
+                </div>
+ </div>
+{% elif wallet.balance == 0.00 %}
+<div class="modal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">wallet empty </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Please make payment to update your wallet</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a href="{% url 'payment' %}" type="button" class="btn btn-primary">Back to payment</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="modal-dialog modal-sm">No wallet Found </div>
+
+{% endif %}
+
+{% endblock %}
+

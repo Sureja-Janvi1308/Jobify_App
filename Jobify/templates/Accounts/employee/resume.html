@@ -1,0 +1,249 @@
+<!doctype html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href='https://fonts.googleapis.com/css?family=Lato:400,300,700' rel='stylesheet' type='text/css'>
+
+    <title>Download Resume</title>
+    <style>
+        * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  height: 100%;
+}
+
+body {
+  height: 100%;
+
+  font-family: 'Arial', sans-serif;
+  font-weight: 400;
+  color: #222;
+  font-size: 14px;
+  height: 26px;
+  padding-bottom: 50px;
+}
+
+.container {
+  width: 700px;
+  background: aliceblue;
+  margin: 0px auto 0px;
+  border-radius: 3px;
+  padding: 40px;
+  margin-top: 50px;
+}
+
+.header {
+  margin-bottom: 30px;
+  }
+
+  .full-name {
+    font-size: 40px;
+    margin-bottom: 5px;
+  }
+
+  .first-name {
+    font-weight: 700;
+    text-transform:uppercase;
+  }
+
+  .last-name {
+    font-weight: 300;
+    text-transform:uppercase;
+  }
+
+  .contact-info {
+    margin-bottom: 20px;
+  }
+
+  .email ,
+  .phone {
+    color: #999;
+    font-weight: bold;
+  }
+
+  .separator {
+    height: 10px;
+
+    border-left: 2px solid #999;
+    margin: 0px 10px;
+  }
+
+
+
+
+
+.details {
+  line-height: 20px;
+}
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section:last-of-type {
+    margin-bottom: 0px;
+  }
+
+  .section__title {
+    letter-spacing: 2px;
+    color: #54AFE4;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+
+  .section__list-item {
+    margin-bottom: 40px;
+  }
+
+  .section__list-item:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .left ,
+  .right {
+    vertical-align: top;
+
+  }
+
+  .left {
+    width: 60%;
+  }
+
+  .right {
+    tex-align: right;
+    width: 39%;
+  }
+
+  .name {
+    font-weight: bold;
+  }
+
+  a {
+    text-decoration: none;
+    color: #000;
+    font-style: italic;
+  }
+
+  a:hover {
+    text-decoration: underline;
+    color: #000;
+  }
+
+
+  .skills__item {
+    margin-bottom: 10px;
+  }
+
+  .skills__item .right {
+
+}
+    label {
+      width: 20px;
+      height: 20px;
+      background: #C3DEF3;
+      border-radius: 20px;
+      margin-right: 3px;
+    }
+
+    input:checked + label {
+      background: #79A9CE;
+    }
+
+
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+      <div class="d-flex justify-content-end" ><img src="{{ employee_profile.profile_pic.url }}"></div>
+    <div class="full-name">
+      <span class="first-name">{{ employee_profile.first_name }}</span>
+      <span class="last-name">{{ employee_profile.last_name }}</span>
+    </div>
+    <div class="contact-info">
+      <span class="email">Email: </span>
+      <span class="email-val">{{ employee_profile.email }}</span>
+      <span class="separator"></span>
+      <span class="phone">Phone: </span>
+      <span class="phone-val">{{ employee_profile.phone_number }}</span>
+    </div>
+
+
+  </div>
+   <div class="details">
+    <div class="section">
+        {% for exp in experiences %}
+      <div class="section__title">Experience</div>
+      <div class="section__list">
+        <div class="section__list-item">
+          <div class="left">
+            <div class="name">Company Name: {{ exp.company_name }}</div>
+            <div class="addr">Job Title: {{ exp.job_title}}</div>
+            <div class="duration">{{ exp.start_date }} - {{ exp.end_date }}</div>
+          </div>
+          <div class="right">
+
+            <div class="desc">{{ exp.description }}</div>
+          </div>
+        </div>
+          {% endfor %}
+                <div class="section__list-item">
+
+        </div>
+
+      </div>
+    </div>
+    <div class="section">
+      <div class="section__title">Education</div>
+      <div class="section__list">
+        <div class="section__list-item">
+            {% for education in educations %}
+          <div class="left">
+            <div class="name">{{ education.institution_name }}</div>
+            <div class="addr">{{ education.degree }}</div>
+            <div class="addr">{{ education.field_of_study }}</div>
+            <div class="duration">{{ education.start_date }} - {{ education.end_date }}</div>
+          </div>
+
+            {% endfor %}
+        </div>
+
+
+      </div>
+
+  </div>
+  <div class="section">
+      <div class="section__title">Education</div>
+      <div class="section__list">
+        <div class="section__list-item">
+            {% for skill in skills %}
+          <div class="left">
+            <div class="name">{{ skill.name }}</div>
+            <div class="addr">{{ skill.years_of_experience }}</div>
+          </div>
+
+            {% endfor %}
+        </div>
+
+
+      </div>
+
+  </div>
+
+
+     </div>
+  </div>
+</div>
+
+</body>
+</html>

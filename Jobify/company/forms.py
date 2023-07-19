@@ -5,6 +5,7 @@ from crispy_forms.layout import Submit
 from django import forms
 
 from company.models import EmployerProfile, Job, Applicants
+from employee.models import Applied_Jobs
 
 
 class EmployerProfileForm(forms.ModelForm):
@@ -52,11 +53,11 @@ class EmployerProfileForm(forms.ModelForm):
             raise forms.ValidationError('Address 1 and Address 2 should not be the same ')
         return address_2
 
-    def clean_website(self):
-        website = self.cleaned_data['website']
-        if not re.search(r'^https?://\w+\./w+$', website):
-            raise forms.ValidationError('Invalid Website URL')
-        return website
+    # def clean_website(self):
+    #     website = self.cleaned_data['website']
+    #     if not re.search(r'^https?://\w+\./w+$', website):
+    #         raise forms.ValidationError('Invalid Website URL')
+    #     return website
 
     def set_initial_user_data(self, user):
         self.fields['first_name'].initial = user.first_name
@@ -76,26 +77,17 @@ class CreateJobForm(forms.ModelForm):
         self.helper.form_method = 'post'
         self.helper.add_input(Submit('submit', 'Save'))
 
-    def clean_title(self):
-        title = self.cleaned_data['title']
-        if title.is_alnum():
-            raise forms.ValidationError('title should not contain any special characters')
-        return title
 
-    def clean_salary(self):
-        salary = self.cleaned_data['salary']
-        if not salary.is_numeric():
-            raise forms.ValidationError('salary should be written in numbers only')
-        return salary
-
-    def clean_position(self):
-        position = self.cleaned_data['position']
-        if not position.is_numeric():
-            raise forms.ValidationError('No of position required should be in numbers only')
-        return position
 
 
 class ApplyJobForm(forms.ModelForm):
     class Meta:
         model = Applicants
-        fields = ('job',)
+        fields = ('job', )
+
+
+class AppliedJobForm(forms.ModelForm):
+
+    class Meta:
+        model = Applied_Jobs
+        fields = ('job', )

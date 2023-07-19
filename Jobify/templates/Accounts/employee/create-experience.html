@@ -2,13 +2,13 @@
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
+
+
 <link rel="stylesheet" href="{% static 'css/button_style.css' %}">
-
 <form class="form-horizontal" method="POST" action="" >
-
        <div class=" mt-5 col-lg-6 offset-3 text-uppercase text-bold ">
         <div class="box border border-dark">
-            <h3 class="heading">Experience Profile</h3>
+            <h3 class="heading">experience Profile</h3>
     {% csrf_token %}
     {{ form|crispy }} <hr> <br>
 
@@ -24,16 +24,14 @@
     {% endfor %}
         </div><br/>
     <div id="empty-form" class="hidden d-none" >{{ formset.empty_form|crispy }}</div>
-              <div class="col-lg-10 text-right mb-5">
+            <div class="col-lg-10 text-right mb-5">
+
     <button type="button" class="btn btn-outline-white-primary d-flex justify-content-end" id="add-more"><i class="fa fa-plus"></i>Add More</button>
-                  </div>
-    <div class="text-center">
+
+            </div>
+                <div class="text-center">
                     <button type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> Save
                     </button>
-                </div>
-             <div class="text-center">
-                    <a href="{%url 'edit-experience' %}" type="submit" class="btn btn-outline-white-primary"><i class="fa fa-user-md"></i> update
-                    </a>
                 </div>
         </div>
        </div>
