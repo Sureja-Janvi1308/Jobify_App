@@ -3,7 +3,6 @@ aiohttp-retry==2.8.3
 aioredis==1.3.1
 aiosignal==1.3.1
 amqp==5.1.1
-apturl==0.5.2
 arabic-reshaper==3.0.0
 asgiref==3.5.2
 asn1crypto==1.5.1
@@ -16,9 +15,7 @@ backcall==0.2.0
 bcrypt==3.2.0
 billiard==3.6.4.0
 blinker==1.6.2
-Brlapi==0.8.3
 celery==5.2.7
-certifi==2020.6.20
 cffi==1.15.1
 channels==3.0.5
 channels-redis==3.3.1
@@ -36,7 +33,6 @@ crispy-bootstrap4==2022.1
 cron-descriptor==1.3.0
 cryptography==40.0.2
 cssselect2==0.7.0
-cupshelpers==1.0
 daphne==3.0.2
 dbus-python==1.2.18
 debugpy==1.6.7
@@ -94,7 +90,7 @@ language-selector==0.1
 launchpadlib==1.10.16
 lazr.restfulclient==0.14.4
 lazr.uri==1.0.6
-lockfile==0.12.2
+
 louis==3.20.0
 lxml==4.9.2
 macaroonbakery==1.3.1

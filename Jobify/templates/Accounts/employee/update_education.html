@@ -19,7 +19,6 @@
 
     <div class="edu-form">
         {{ form|crispy }}
-        <button type="button" class="delete-form" name="DELETE"> Delete </button>
     </div>
     {% endfor %}
         </div><br/>
@@ -62,44 +61,15 @@
         copyEmptyFormEl.innerHTML = copyEmptyFormEl.innerHTML.replace(regex, currentFormCount)
         totalNewForms.setAttribute('value', currentFormCount + 1)
 
-        const deleteButton = document.createElement('button');
-        deleteButton.setAttribute('type', 'button');
-        deleteButton.setAttribute('class', 'delete-form');
-        deleteButton.textContent = 'Delete';
-        copyEmptyFormEl.appendChild(deleteButton);
-
         formCopyTarget.append(copyEmptyFormEl);
         }
-
-        function deleteForm(event) {
-        const formToDelete = event.target.parentNode;
-        formToDelete.remove();
-        const currentEduForms = document.getElementByClassName('edu-form');
-        const totalNewForms = document.getElementById('id_form-TOTAL_FORMS');
-        totalNewForms.setAttribute('value', currentEduForms.length);
-
-        for(let i=0; i < currentEduForms.length; i++){
-        const form = currentEduForms[i];
-        const prefix = 'form-${i}-';
-        updateFormFields(form, prefix);
+       function deleteForm(event) {
+        const formToDelete = event.target.closest('.edu-form');
+        formToDelete.style.display = 'none';
+        const deleteField = formToDelete.querySelector('[name$="-DELETE"]');
+        deleteField.checked = true;
         }
 
-        function updateFormFields(form, prefix){
-            const formFields = form.getElementByTagName('input')
-            for(let i=0; i < formFields.length; i++)
-            {
-            const field = formFields[i];
-            const fieldName = fieldName.getAttribute('name');
-            const updatedName = fieldName.replace(/form-\d+-/g, prefix);
-            field.setAttribute('id', updatedName);
-            field.setAttribute('name', updatedName);
-            }
-
-
-
-        }
-
-    }
 
 
 

@@ -14,7 +14,7 @@ class EmployeeProfileForm(forms.ModelForm):
     class Meta:
         model = EmployeeProfile
         exclude = ['user']
-        fields = ['first_name', 'last_name', 'email', 'phone_number', 'address_1', 'address_2', 'city', 'state',
+        fields = ['phone_number', 'address_1', 'address_2', 'city', 'state',
                   'pincode', 'country', 'profile_pic']
 
     def __init__(self, *args, **kwargs):
@@ -31,18 +31,6 @@ class EmployeeProfileForm(forms.ModelForm):
             raise forms.ValidationError('Not a Valid Phone Number')
         return phone_number
 
-    def clean_first_name(self):
-        first_name = self.cleaned_data['first_name']
-        if not first_name.isalpha():
-            raise forms.ValidationError('First name should consist of only letters')
-        return first_name
-
-    def clean_last_name(self):
-        last_name = self.cleaned_data['last_name']
-        if not last_name.isalpha():
-            raise forms.ValidationError('Last name should consist of only letters')
-        return last_name
-
     def clean_address_2(self):
         address_1 = self.cleaned_data.get('address_1')
         address_2 = self.cleaned_data['address_2']
@@ -56,12 +44,6 @@ class EmployeeProfileForm(forms.ModelForm):
             raise forms.ValidationError('Zipcode should not consist of any letters ')
         return pincode
 
-    def set_initial_user_data(self, user):
-        self.fields['first_name'].initial = user.first_name
-        self.fields['last_name'].initial = user.last_name
-        self.fields['email'].initial = user.email
-        self.fields['first_name'].widget.attrs['readonly'] = True
-
 
 class EducationForm(forms.ModelForm):
     class Meta:
@@ -71,7 +53,9 @@ class EducationForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.helper = self._set_form_helper()
+        self.helper = FormHelper()
+        self.helper.form_method = 'post'
+        self.helper.add_input(Submit('submit', 'Save'))
 
     def clean(self):
         cleaned_data = super().clean()
@@ -91,8 +75,7 @@ class EducationForm(forms.ModelForm):
         if any(char.isdigit() for char in value):
             raise forms.ValidationError('Institution Name cannot contain digits')
 
-        if not any(char in '@/' for char in value):
-            raise forms.ValidationError("Institution Name Should contain '@' or '/'")
+
 
     def validate_degree(value):
         if any(char.isdigit() or not char.isalnum() for char in value):
@@ -101,20 +84,6 @@ class EducationForm(forms.ModelForm):
     def validate_field_of_study(value):
         if any(char.isdigit() or not char.isalnum() for char in value):
             raise forms.ValidationError('Degree should NOT contain Special Characters or Numbers')
-
-    def _set_form_helper(self):
-        helper = FormHelper()
-        helper.form_tag = False
-        helper.layout = Layout(
-            Field('institution_name', css_class='form-control'),
-            Field('degree', css_class='form-control'),
-            Field('field_of_study', css_class='form-control'),
-            Field('start_date', css_class='form-control'),
-            Field('end_date', css_class='form-control'),
-
-        )
-        helper.layout.append(ButtonHolder(Submit('submit', 'Submit', css_class='btn btn-primary')))
-        return helper
 
 
 EducationFormSet = modelformset_factory(Education, form=EducationForm, extra=0)
@@ -172,4 +141,3 @@ class SkillForm(forms.ModelForm):
             years_of_experience = self.cleaned_data['years_of_experience']
             if not years_of_experience.isalnum():
                 raise forms.ValidationError('Experience Should be in Numbers Only ')
-

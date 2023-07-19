@@ -19,7 +19,6 @@
 
     <div class="edu-form">
         {{ form|crispy }}
-        <button type="button" class="delete-form" > Delete </button>
     </div>
     {% endfor %}
         </div><br/>
@@ -72,10 +71,11 @@
         }
 
         function deleteForm(event) {
-        const formToDelete = event.target.parentNode;
-        formToDelete.remove();
-
-    }
+const formToDelete = event.target.closest('.edu-form');
+formToDelete.style.display = 'none';
+const deleteField = formToDelete.querySelector('[name$="-DELETE"]');
+deleteField.checked = true;
+}
 
 
 

@@ -24,7 +24,7 @@
             <div   class="row">
 
 
-                {% for applicant in lst %}
+                {% for applicant in applicants %}
 
 
                     <div class="col-lg-6">
@@ -62,13 +62,15 @@
                                 </div>
 
 
-
+{% if contact %}
                                   <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" >
  <i class="fa fa-envelope"></i>{{contact}}
 </a>
+                            {% else%}
                                 <a href="" type="button" class="btn btn-outline-white-secondary btn-sm" data-toggle="modal" data-target="#staticBackdrop">
  <i class="fa fa-envelope"></i> contact
 </a>
+                            {% endif %}
 
 
 
